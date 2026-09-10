@@ -1,0 +1,20 @@
+{
+  "name": "playwright-generated-framework",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test": "playwright test",
+    "test:sanity": "playwright test sanity --project=chromium --headed",
+    "test:regression": "playwright test regression --project=chromium --headed",
+    "test:rfp": "playwright test regression/rfp --project=chromium --workers=1",
+    "test:estimates": "playwright test regression/estimates --project=chromium --workers=1",
+    "test:product-item": "playwright test regression/product-item --project=chromium --workers=1",
+    "test:opportunity": "playwright test regression/opportunity --project=chromium --workers=1",
+    "test:regression:all": "playwright test regression --project=chromium --workers=1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "@playwright/test": "^1.62.1",
+    "allure-playwright": "^3.10.2"
+  }
+}

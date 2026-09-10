@@ -1,0 +1,109 @@
+image: mcr.microsoft.com/playwright:v1.62.1-jammy
+
+definitions:
+  caches:
+    npm: ~/.npm
+
+  steps:
+    - step: &rfp-test
+        size: 2x
+        max-time: 120
+        caches:
+          - npm
+        artifacts:
+          - playwright-report/**
+          - test-results/**
+          - allure-results/**
+
+    - step: &estimates-test
+        size: 2x
+        max-time: 120
+        caches:
+          - npm
+        artifacts:
+          - playwright-report/**
+          - test-results/**
+          - allure-results/**
+
+    - step: &product-item-test
+        size: 2x
+        max-time: 120
+        caches:
+          - npm
+        artifacts:
+          - playwright-report/**
+          - test-results/**
+          - allure-results/**
+
+    - step: &opportunity-test
+        size: 2x
+        max-time: 120
+        caches:
+          - npm
+        artifacts:
+          - playwright-report/**
+          - test-results/**
+          - allure-results/**
+
+    - step: &regression-test
+        size: 2x
+        max-time: 120
+        caches:
+          - npm
+        artifacts:
+          - playwright-report/**
+          - test-results/**
+          - allure-results/**
+
+# Manual only (Pipelines → Run pipeline). No branches/default = not on push.
+pipelines:
+  custom:
+    rfp:
+      - step:
+          <<: *rfp-test
+          name: Run RFP
+          script:
+            - npm ci
+            - npx playwright install --with-deps chromium
+            - rm -f data/session-data.json data/session-data-w*.json
+            - npx playwright test regression/rfp --project=chromium --workers=1
+
+    estimates:
+      - step:
+          <<: *estimates-test
+          name: Run Estimates
+          script:
+            - npm ci
+            - npx playwright install --with-deps chromium
+            - rm -f data/session-data.json data/session-data-w*.json
+            - npx playwright test regression/estimates --project=chromium --workers=1
+
+    product-item:
+      - step:
+          <<: *product-item-test
+          name: Run Product Item
+          script:
+            - npm ci
+            - npx playwright install --with-deps chromium
+            - rm -f data/session-data.json data/session-data-w*.json
+            - npx playwright test regression/product-item --project=chromium --workers=1
+
+    opportunity:
+      - step:
+          <<: *opportunity-test
+          name: Run Opportunity
+          script:
+            - npm ci
+            - npx playwright install --with-deps chromium
+            - rm -f data/session-data.json data/session-data-w*.json
+            - npx playwright test regression/opportunity --project=chromium --workers=1
+
+    regression:
+      - step:
+          <<: *regression-test
+          name: Run All Modules
+          script:
+            - npm ci
+            - npx playwright install --with-deps chromium
+            - rm -f data/session-data.json data/session-data-w*.json
+            - npx playwright test regression --project=chromium --workers=1

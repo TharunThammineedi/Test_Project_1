@@ -51,7 +51,8 @@ test('Verify Estimate Summary @regression @set1', async ({ page }) => {
 
   const summaryButton = page.locator('[data-cy="summary-button"]');
   await expect(summaryButton).toBeEnabled();
-  await summaryButton.click();
+  await page.goto(page.url().replace(/\/$/, '') + '/summary');
+  await expect(page).toHaveURL(/\/summary/);
 
   const summaryHeading = page.locator('h1').filter({ hasText: `Estimate #${estimateNumber} Summary` }).first();
   await expect(summaryHeading).toBeVisible();

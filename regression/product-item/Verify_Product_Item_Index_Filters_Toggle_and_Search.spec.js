@@ -56,7 +56,7 @@ test('Verify Product Item Index Filters, Toggle and Search @regression @set2', a
   const saveSearchButton = page.getByRole('button', { name: 'Save Search', exact: true });
   await expect(saveSearchButton).toBeVisible();
 
-  const resetButton = page.getByRole('button', { name: 'Reset', exact: true });
+  const resetButton = page.getByRole('button', { name: 'Reset', exact: true }).first();
   await expect(resetButton).toBeVisible();
 
   const quickSearchInput = page.locator('input[placeholder="Quick Search"][data-flux-control]');

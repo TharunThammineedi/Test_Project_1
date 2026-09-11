@@ -4,6 +4,7 @@ node_modules/
 # Playwright outputs
 test-results/
 playwright-report/
+blob-report/
 
 # Allure outputs
 allure-results/

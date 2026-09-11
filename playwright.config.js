@@ -20,7 +20,12 @@ module.exports = defineConfig({
     ['line'],
     ['json', { outputFile: 'test-results/report.json' }],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['allure-playwright', { resultsDir: 'allure-results' }],
+    ['allure-playwright', { resultsDir: process.env.ALLURE_RESULTS_DIR || 'allure-results' }],
+    ['blob', {
+      outputDir: process.env.MODULE
+        ? `blob-report/${process.env.MODULE}`
+        : 'blob-report',
+    }],
   ],
   use: {
     actionTimeout: 60000,

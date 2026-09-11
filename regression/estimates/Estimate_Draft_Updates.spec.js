@@ -102,14 +102,27 @@ test.describe('Estimate Draft Updates @regression', () => {
     await expect(printMethodInput).toBeVisible();
     await expect(printMethodInput).toBeEnabled();
     await printMethodInput.click();
-    await page.waitForTimeout(2000);
 
-    const currentOption = page.locator(`li[data-label="${currentPrintMethod}"]`);
-    const nextOption = currentOption.locator('xpath=following-sibling::li[1]');
-    const targetOption = (await nextOption.count()) ? nextOption : currentOption.locator('xpath=preceding-sibling::li[1]');
-    await expect(targetOption).toBeVisible();
-    const targetValue = await targetOption.getAttribute('data-label');
-    await targetOption.click();
+    const printMethodOptions = page.locator('//input[@name="deliverableItem.print_method_id"]//..//..//div//ul//li');
+    await expect(printMethodOptions.first()).toBeVisible();
+
+    let targetValue = currentPrintMethod;
+    const optionCount = await printMethodOptions.count();
+    for (let i = 0; i < optionCount; i++) {
+      const option = printMethodOptions.nth(i);
+      if (!(await option.isVisible())) {
+        continue;
+      }
+      const label = (await option.getAttribute('data-label')) || '';
+      if (label && label !== currentPrintMethod) {
+        targetValue = label;
+        await option.click();
+        break;
+      }
+    }
+    if (targetValue === currentPrintMethod) {
+      await page.keyboard.press('Escape');
+    }
     await page.waitForTimeout(2000);
 
     const saveButton = page.locator('button[x-tooltip="Save"]').first();

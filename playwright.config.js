@@ -10,7 +10,7 @@ module.exports = defineConfig({
   globalTeardown: require.resolve('./global-teardown.js'),
   fullyParallel: false,
   forbidOnly: isCI,
-  workers: 1,
+  workers: 4,
   retries: 1,
   timeout: 360000,
   expect: {

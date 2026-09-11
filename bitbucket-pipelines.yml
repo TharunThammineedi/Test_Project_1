@@ -45,16 +45,6 @@ definitions:
           - test-results/**
           - allure-results/**
 
-    - step: &regression-test
-        size: 2x
-        max-time: 120
-        caches:
-          - npm
-        artifacts:
-          - playwright-report/**
-          - test-results/**
-          - allure-results/**
-
 # Manual only (Pipelines → Run pipeline). No branches/default = not on push.
 pipelines:
   custom:
@@ -66,7 +56,7 @@ pipelines:
             - npm ci
             - npx playwright install --with-deps chromium
             - rm -f data/session-data.json data/session-data-w*.json
-            - npx playwright test regression/rfp --project=chromium --workers=1
+            - npx playwright test regression/rfp --project=chromium --workers=4
 
     estimates:
       - step:
@@ -76,7 +66,7 @@ pipelines:
             - npm ci
             - npx playwright install --with-deps chromium
             - rm -f data/session-data.json data/session-data-w*.json
-            - npx playwright test regression/estimates --project=chromium --workers=1
+            - npx playwright test regression/estimates --project=chromium --workers=4
 
     product-item:
       - step:
@@ -86,7 +76,7 @@ pipelines:
             - npm ci
             - npx playwright install --with-deps chromium
             - rm -f data/session-data.json data/session-data-w*.json
-            - npx playwright test regression/product-item --project=chromium --workers=1
+            - npx playwright test regression/product-item --project=chromium --workers=4
 
     opportunity:
       - step:
@@ -96,14 +86,39 @@ pipelines:
             - npm ci
             - npx playwright install --with-deps chromium
             - rm -f data/session-data.json data/session-data-w*.json
-            - npx playwright test regression/opportunity --project=chromium --workers=1
+            - npx playwright test regression/opportunity --project=chromium --workers=4
 
     regression:
-      - step:
-          <<: *regression-test
-          name: Run All Modules
-          script:
-            - npm ci
-            - npx playwright install --with-deps chromium
-            - rm -f data/session-data.json data/session-data-w*.json
-            - npx playwright test regression --project=chromium --workers=1
+      - parallel:
+          - step:
+              <<: *rfp-test
+              name: Run RFP
+              script:
+                - npm ci
+                - npx playwright install --with-deps chromium
+                - rm -f data/session-data.json data/session-data-w*.json
+                - npx playwright test regression/rfp --project=chromium --workers=4
+          - step:
+              <<: *estimates-test
+              name: Run Estimates
+              script:
+                - npm ci
+                - npx playwright install --with-deps chromium
+                - rm -f data/session-data.json data/session-data-w*.json
+                - npx playwright test regression/estimates --project=chromium --workers=4
+          - step:
+              <<: *product-item-test
+              name: Run Product Item
+              script:
+                - npm ci
+                - npx playwright install --with-deps chromium
+                - rm -f data/session-data.json data/session-data-w*.json
+                - npx playwright test regression/product-item --project=chromium --workers=4
+          - step:
+              <<: *opportunity-test
+              name: Run Opportunity
+              script:
+                - npm ci
+                - npx playwright install --with-deps chromium
+                - rm -f data/session-data.json data/session-data-w*.json
+                - npx playwright test regression/opportunity --project=chromium --workers=4

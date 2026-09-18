@@ -3,7 +3,7 @@ import testData from '../../test-data.json';
 import { test, expect } from '@playwright/test';
 const { prepareSession } = require('../../helpers/sessionData');
 
-test('Create PrePress from Product Item @regression @set2', async ({ page }) => {
+test('Create PrePress from Product Item @regression @set2 @mainflow', async ({ page }) => {
   const session = prepareSession({ force: true });
   Object.assign(testData, session);
   console.log(`[data] Creation override → nameRequired: ${session.nameRequired}`);

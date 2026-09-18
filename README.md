@@ -35,22 +35,26 @@ npm run test:sanity
 
 ```powershell
 npm run test:regression
+npm run test:customer
+npm run test:estimates
 ```
 
 ## Jenkins CI/CD
 
-Use the root `Jenkinsfile` to create a Jenkins Pipeline job that checks out this repo and runs the selected suite or spec.
+Use the root `Jenkinsfile` with a Pipeline job that checks out **GitHub** (`githubUrl` in `.project-metadata.json`). Parameters:
+
+- `BROWSER` — chromium (default), msedge, firefox, webkit
+- `HEADED` — false for CI
+- `TARGET` — suite folder or a `.spec.js` path
+- `WORKERS` — default 4
 
 ```powershell
-EXECUTION_MODE=suite
 TARGET=regression
-```
-
-or
-
-```powershell
-EXECUTION_MODE=spec
-TARGET=regression/test_kortis_01.spec.js
+TARGET=regression/estimates
+TARGET=regression/customer
+TARGET=regression/product-item
+TARGET=regression/opportunity
+TARGET=regression/rfp
 ```
 
 ## Run One Spec File

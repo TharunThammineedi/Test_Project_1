@@ -38,7 +38,7 @@ test.describe('RFP Creation @regression', () => {
     await page.close();
   });
 
-  test('Create Requested RFP with note and comment @regression @set1 @demo', async () => {
+  test('Create Requested RFP with note and comment @regression @set1', async () => {
     test.setTimeout(720000);
     const session = prepareSession({ force: true });
     Object.assign(testData, session);

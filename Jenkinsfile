@@ -19,7 +19,7 @@ pipeline {
     string(
       name: 'TARGET',
       defaultValue: 'regression',
-      description: 'Folder or spec: regression, sanity, regression/rfp, regression/estimates, regression/opportunity, regression/product-item, or a .spec.js path'
+      description: 'Folder or spec: regression, sanity, regression/rfp, regression/estimates, regression/opportunity, regression/product-item, regression/customer, or a .spec.js path'
     )
     string(
       name: 'WORKERS',
@@ -31,6 +31,7 @@ pipeline {
   environment {
     CI = 'true'
     HEADLESS = "${params.HEADED ? 'false' : 'true'}"
+    PLAYWRIGHT_NO_COPY_PROMPT = '1'
   }
 
   stages {
@@ -58,9 +59,14 @@ pipeline {
             } else {
               powershell 'Remove-Item -Force -ErrorAction SilentlyContinue data/session-data.json, data/session-data-w*.json'
             }
+            def target = (params.TARGET ?: 'regression').trim()
+            if (!target) {
+              target = 'regression'
+            }
+            echo "Running Playwright: TARGET=${target} BROWSER=${params.BROWSER} WORKERS=${params.WORKERS} HEADED=${params.HEADED}"
             def headedArg = params.HEADED ? ' --headed' : ''
             def workers = Math.max(1, (params.WORKERS ?: '4').toInteger())
-            runCmd("npx playwright test \"${params.TARGET.trim()}\" --project=${params.BROWSER} --workers=${workers}${headedArg}")
+            runCmd("npx playwright test \"${target}\" --project=${params.BROWSER} --workers=${workers}${headedArg}")
           }
         }
       }

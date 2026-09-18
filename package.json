@@ -10,6 +10,8 @@
     "test:estimates": "playwright test regression/estimates --project=chromium --workers=1",
     "test:product-item": "playwright test regression/product-item --project=chromium --workers=1",
     "test:opportunity": "playwright test regression/opportunity --project=chromium --workers=1",
+    "test:customer": "playwright test regression/customer --project=chromium --workers=1",
+    "test:mainflow": "playwright test regression --project=chromium --grep \"@mainflow\" --workers=1",
     "test:regression:all": "playwright test regression --project=chromium --workers=1"
   },
   "devDependencies": {

@@ -38,7 +38,7 @@ test.describe('Opportunity Creation @regression', () => {
     await page.close();
   });
 
-  test('Creation of Opportunity with plant and note @regression', async () => {
+  test('Creation of Opportunity with plant and note @regression @mainflow', async () => {
     test.setTimeout(720000);
     const session = prepareSession({ force: true });
     Object.assign(testData, session);
@@ -83,6 +83,28 @@ test.describe('Opportunity Creation @regression', () => {
 
     const selectCustomerButton = page.getByRole('button', { name: 'Select Customer', exact: true });
     await expect(selectCustomerButton).toBeVisible();
+    await expect(selectCustomerButton).toBeEnabled();
+    await selectCustomerButton.click();
+
+    const quickSearchInput = page.locator("//span[normalize-space()='Customer Only']/ancestor::div[3]//input[@placeholder='Quick Search']");
+    await page.waitForLoadState('domcontentloaded');
+    await quickSearchInput.fill(testData.quickSearch);
+
+    const charlesLecrecCell = page.locator('td').filter({ hasText: 'Charles Lecrec' }).first();
+    await expect(charlesLecrecCell).toBeVisible();
+    await expect(charlesLecrecCell).toBeEnabled();
+    await page.waitForTimeout(4000);
+    await charlesLecrecCell.click();
+
+    const unlinkButton = page.getByRole('button', { name: 'Unlink', exact: true });
+    await expect(unlinkButton).toBeVisible();
+
+    const continueCustomerPickerButton = page.getByRole('button', { name: 'Continue', exact: true }).first();
+    await expect(continueCustomerPickerButton).toBeEnabled();
+    await continueCustomerPickerButton.click();
+
+    const selectedCustomerButton = page.getByRole('button', { name: 'Charles Lecrec', exact: true });
+    await expect(selectedCustomerButton).toBeVisible();
 
     const continueButton = page.getByRole('button', { name: 'Continue', exact: true });
     await expect(continueButton).toBeEnabled();

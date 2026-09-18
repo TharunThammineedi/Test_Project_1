@@ -3,7 +3,7 @@ import testData from '../../test-data.json';
 import { test, expect } from '@playwright/test';
 const { prepareSession } = require('../../helpers/sessionData');
 
-test('Create Product Item with general info, edit and note @regression @set2 @demo', async ({ page }) => {
+test('Create Product Item with general info, edit and note @regression @set2', async ({ page }) => {
   test.setTimeout(720000);
   const session = prepareSession({ force: true });
   Object.assign(testData, session);

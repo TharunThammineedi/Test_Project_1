@@ -36,5 +36,6 @@ module.exports = {
     'itemDefaultCost',
     'itemDefaultPrice',
     'notesRequired',
+    'otherNotes',
   ],
 };

@@ -71,6 +71,23 @@ test('Verify Product Item Index Filters, Toggle and Search @regression @set2', a
   await expect(sortButton).toBeVisible();
   await expect(sortButton).toBeEnabled();
 
+  const sortLabel = page.locator('//span[text()="Sort"]').first();
+  await expect(sortLabel).toBeVisible();
+  await sortLabel.click();
+
+  await expect(page.locator('//span[text()="Sort"]').last()).toBeVisible();
+
+  await page.locator("//select[@name='direction']").selectOption('asc');
+
+  await page.locator('//button[normalize-space()="Apply"]').last().click();
+  await page.waitForTimeout(2000);
+
+  const row1Number = ((await page.locator('//tbody//tr[1]//td[2]//p[1]').innerText()) || '').split(/\s*\|\s*/)[0].trim();
+  const row2Number = ((await page.locator('//tbody//tr[2]//td[2]//p[1]').innerText()) || '').split(/\s*\|\s*/)[0].trim();
+  console.log(`[data] sortRow1: ${row1Number}`);
+  console.log(`[data] sortRow2: ${row2Number}`);
+  expect(row1Number.localeCompare(row2Number)).toBeLessThanOrEqual(0);
+
   const newProductItemLink = page.getByRole('link', {
     name: 'New Product Item',
     exact: true

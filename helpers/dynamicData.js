@@ -34,6 +34,7 @@ function generateDynamicFields() {
     itemDefaultCost: String(faker.number.int({ min: 11, max: 99 })),
     itemDefaultPrice: String(faker.number.int({ min: 101, max: 999 })),
     notesRequired: faker.lorem.words(4),
+    otherNotes: faker.lorem.sentence(),
   };
 }
 

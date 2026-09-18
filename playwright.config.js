@@ -1,5 +1,7 @@
 const { defineConfig } = require('@playwright/test');
 
+process.env.PLAYWRIGHT_NO_COPY_PROMPT = '1';
+
 const isCI = !!process.env.CI;
 
 module.exports = defineConfig({
@@ -10,7 +12,7 @@ module.exports = defineConfig({
   globalTeardown: require.resolve('./global-teardown.js'),
   fullyParallel: false,
   forbidOnly: isCI,
-  workers: 4,
+  workers: isCI ? 4 : 1,
   retries: 1,
   timeout: 360000,
   expect: {
@@ -20,12 +22,7 @@ module.exports = defineConfig({
     ['line'],
     ['json', { outputFile: 'test-results/report.json' }],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['allure-playwright', { resultsDir: process.env.ALLURE_RESULTS_DIR || 'allure-results' }],
-    ['blob', {
-      outputDir: process.env.MODULE
-        ? `blob-report/${process.env.MODULE}`
-        : 'blob-report',
-    }],
+    ['allure-playwright', { resultsDir: 'allure-results' }],
   ],
   use: {
     actionTimeout: 60000,

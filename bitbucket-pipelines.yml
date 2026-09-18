@@ -82,7 +82,7 @@ pipelines:
             - npm ci
             - npx playwright install --with-deps chromium
             - rm -f data/session-data.json data/session-data-w*.json
-            - npx playwright test regression --project=chromium --grep '@mainflow' --workers=1
+            - npx playwright test regression --project=chromium --grep '@mainflow' --workers=4
 
     regression:
       - step:

@@ -140,27 +140,24 @@ test('Create and Verify Product Item from Opportunity @regression @set1 @mainflo
   const productItemCreatedText = page.getByText('Product Item created successfully.', { exact: true });
   await expect(productItemCreatedText).toBeVisible({ timeout: 60000 });
 
-  await page.mouse.wheel(0, 3000);
-  await page.waitForTimeout(1000);
+  await page.reload();
+  await page.waitForLoadState('domcontentloaded');
+  await page.mouse.wheel(0, 200);
+  await page.mouse.wheel(0, 400);
+  await page.waitForTimeout(2000);
 
-  const routeDiv = page.locator('div').filter({ hasText: /FG\d+\s+Route #/ }).first();
-  await expect(routeDiv).toBeVisible({ timeout: 15000 });
-  const routeText = (await routeDiv.innerText()).trim();
-  const productItemCode = (routeText.match(/FG\d+/) || [''])[0];
-  console.log(`[data] productItemCode: ${productItemCode}`);
-  expect(productItemCode.length).toBeGreaterThan(0);
-  await expect(routeDiv).toBeEnabled();
-  await routeDiv.click();
-
-  const fgDiv = page.locator('div').filter({ hasText: productItemCode }).first();
+  const fgDiv = page.locator('//a[@x-tooltip=\'Open\']/preceding-sibling::div//div[starts-with(normalize-space(),"FG")]').first();
   await expect(fgDiv).toBeVisible();
-  await expect(fgDiv).toBeEnabled();
-  await fgDiv.click();
+  const productItemCode = (await fgDiv.innerText()).trim();
+  console.log(`[data] productItemCode: ${productItemCode}`);
 
-  const openLink = page.locator('a[x-tooltip="Open"]').first();
+  const openLink = page.locator(
+    '//a[@x-tooltip=\'Open\'][preceding-sibling::div//div[normalize-space()="' + productItemCode + '"]]'
+  );
   await expect(openLink).toBeVisible();
   await expect(openLink).toBeEnabled();
-  await openLink.click();
+  await openLink.click({ force: true });
+  await page.waitForLoadState('domcontentloaded');
 
   const productItemHeading = page.locator('div').filter({ hasText: `${productItemCode}-Product Item` }).first();
   await expect(productItemHeading).toBeVisible();

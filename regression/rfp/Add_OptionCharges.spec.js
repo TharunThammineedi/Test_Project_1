@@ -68,34 +68,47 @@ test('Add Option Charges in RFP @regression @set2', async ({ page }) => {
   await page.waitForLoadState('domcontentloaded');
 
   async function applying_filters() {
+    const loggedInUserName = (
+      await page.locator('#user-menu-button .font-semibold').first().innerText()
+    ).trim();
+    console.log(`[data] loggedInUserName: ${loggedInUserName}`);
+    expect(loggedInUserName.length).toBeGreaterThan(0);
 
-    const toggleMyne = page.locator('//span[normalize-space()="Mine"]//following::button[1]');
-    await toggleMyne.click();
-  
     const filtersButton = page.getByRole('button', { name: 'Filters 0', exact: true });
     await expect(filtersButton).toBeEnabled();
     await filtersButton.click();
-   
+
     const columnSelect = page.locator("xpath=//option[normalize-space(.)='Column']/ancestor::select");
     await columnSelect.click();
-    await columnSelect.selectOption("status");
+    await columnSelect.selectOption("Requested By");
 
     const operatorSelect = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select");
     await operatorSelect.click();
     await operatorSelect.selectOption("is equal to");
 
-    const valueSelect = page.locator("xpath=//option[normalize-space(.)='Value']/ancestor::select");
-    await valueSelect.click();
-    await valueSelect.selectOption("requested");
-   
+    const valueSelect = page.getByPlaceholder('value');
+    await valueSelect.fill(loggedInUserName);
+
+    const addAFilterButton = page.locator('p').filter({ hasText: 'Add A Filter' });
+    await addAFilterButton.click();
+
+    const columnSelect_2 = page.locator("xpath=//option[normalize-space(.)='Column']/ancestor::select").last();
+    await columnSelect_2.click();
+    await columnSelect_2.selectOption("status");
+
+    const operatorSelect_2 = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select").last();
+    await operatorSelect_2.click();
+    await operatorSelect_2.selectOption("is equal to");
+
+    const valueSelect_2 = page.locator("xpath=//option[normalize-space(.)='Value']/ancestor::select").last();
+    await valueSelect_2.click();
+    await valueSelect_2.selectOption("requested");
+
     const applyButton = page.getByRole('button', { name: 'Apply', exact: true });
     await expect(applyButton).toBeEnabled();
     await applyButton.click();
-  
-    //Assertion Applying Filters
-    await expect(page.getByRole('button', { name: 'Filters 1', exact: true }) ).toBeVisible();
-  
-    
+
+    await expect(page.getByRole('button', { name: 'Filters 2', exact: true })).toBeVisible();
 }
   await applying_filters();
 

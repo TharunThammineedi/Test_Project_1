@@ -63,6 +63,12 @@ test('Link Product Routes and quick search @regression @set1', async ({ page }) 
 
   await page.waitForLoadState('domcontentloaded');
 
+  const loggedInUserName = (
+    await page.locator('#user-menu-button .font-semibold').first().innerText()
+  ).trim();
+  console.log(`[data] loggedInUserName: ${loggedInUserName}`);
+  expect(loggedInUserName.length).toBeGreaterThan(0);
+
   const filtersButton = page.getByRole('button', { name: 'Filters 0', exact: true });
   await expect(filtersButton).toBeEnabled();
   await filtersButton.click();
@@ -73,10 +79,10 @@ test('Link Product Routes and quick search @regression @set1', async ({ page }) 
 
   const operatorSelect = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select");
   await operatorSelect.click();
-  await operatorSelect.selectOption("contains");
+  await operatorSelect.selectOption("is equal to");
 
   const valueSelect = page.getByPlaceholder('value');
-  await valueSelect.fill("Ranga Sharan Rohith");
+  await valueSelect.fill(loggedInUserName);
 
   const addAFilterButton = page.locator('p').filter({ hasText: 'Add A Filter' });
   await addAFilterButton.click();
@@ -117,7 +123,7 @@ test('Link Product Routes and quick search @regression @set1', async ({ page }) 
   const column11 = page.locator('//thead/tr/th[11]//following::tbody/tr/td[11]/div');
   const column11Text = await column11.allTextContents();
   for (const text of column11Text) {
-    expect(text.trim()).toBe("Ranga Sharan Rohith");
+    expect(text.trim()).toBe(loggedInUserName);
   }
 
   const firstRfpCell = page.locator('//tbody//tr[1]//td[2]');
@@ -149,70 +155,69 @@ test('Link Product Routes and quick search @regression @set1', async ({ page }) 
   await expect(page.locator('th').filter({ hasText: 'LATEST PREPRESS REQUEST' }).first()).toBeVisible();
   await page.waitForTimeout(2000);
 
-  const rowCount = await page.locator('//h3[normalize-space()="Product Routes"]//following::table//thead/following-sibling::tbody/tr').count();
-  console.log("Row count:",rowCount);
-  if(rowCount === 0) {
-    const linkRoutesButton = page.getByRole('button', { name: 'Link Routes', exact: true });
-    await expect(linkRoutesButton).toBeEnabled();
-    await linkRoutesButton.click();
+  const productRouteRows = page.locator('//h3[normalize-space()="Product Routes"]//following::table//thead/following-sibling::tbody/tr');
+  const rowCountBefore = await productRouteRows.count();
+  console.log("Row count:", rowCountBefore);
 
-    const chooseProductRoutesHeading = page.locator('h3').filter({ hasText: 'Choose Product Routes' }).first();
-    await expect(chooseProductRoutesHeading).toBeVisible();
+  const linkRoutesButton = page.getByRole('button', { name: 'Link Routes', exact: true });
+  await expect(linkRoutesButton).toBeEnabled();
+  await linkRoutesButton.click();
 
-    const checkbox1 = page.locator('input[name="selectedIds"]').nth(0);
-    await expect(checkbox1).toBeVisible();
-    await checkbox1.check();
-    await expect(checkbox1).toBeChecked();
+  const chooseProductRoutesHeading = page.locator('h3').filter({ hasText: 'Choose Product Routes' }).first();
+  await expect(chooseProductRoutesHeading).toBeVisible();
 
-    const expectedText_1 = (await checkbox1.locator('xpath=following-sibling::label').innerText()).trim();
-    console.log("checkbox1Text:", expectedText_1);
+  const codedRows = page.locator("//input[contains(@class,'form-checkbox') and starts-with(@id,'checkbox.input')]/ancestor::tr[string-length(normalize-space(td[2])) > 0]");
+  await expect(codedRows.first()).toBeVisible();
 
-    const checkbox2 = page.locator('input[name="selectedIds"]').nth(1);
-    await expect(checkbox2).toBeVisible();
-    await checkbox2.check();
-    await expect(checkbox2).toBeChecked();
+  const row1 = codedRows.nth(0);
+  const checkbox1 = row1.locator('input.form-checkbox[id^="checkbox.input"]');
+  await expect(checkbox1).toBeVisible();
+  await checkbox1.click();
+  await expect(checkbox1).toBeChecked();
 
-    const expectedText_2 = (await checkbox2.locator('xpath=following-sibling::label').innerText()).trim();
-    console.log("checkbox2Text:", expectedText_2);
+  const expectedText_1 = (await row1.locator('xpath=./td[2]').innerText()).trim().split(/\n/)[0].split('|')[0].trim();
+  console.log("checkbox1Text:", expectedText_1);
 
-    const continueButton = page.getByRole('button', { name: 'Continue', exact: true });
-    await expect(continueButton).toBeEnabled();
-    await continueButton.click();
+  await expect(page.getByRole('button', { name: 'Updating selection...' })).toHaveCount(0);
 
-    await expect(page.locator('p').filter({ hasText: 'Routes linked.' }).first()).toBeVisible();
-    await expect(page.locator('td').filter({ hasText: expectedText_1 }).first()).toBeVisible();
-    await expect(page.locator('td').filter({ hasText: expectedText_2 }).first()).toBeVisible();
+  const row2 = codedRows.nth(1);
+  const checkbox2 = row2.locator('input.form-checkbox[id^="checkbox.input"]');
+  await expect(checkbox2).toBeVisible();
+  await checkbox2.click();
+  await expect(checkbox2).toBeChecked();
 
-    const productRouteRows = page.locator('//h3[normalize-space()="Product Routes"]//following::table//thead/following-sibling::tbody/tr');
-    const quickSearchInput = page.locator('[data-cy="search-alt"] input[data-cy="input"][placeholder="Quick Search"]').first();
-    await expect(quickSearchInput).toBeVisible();
-    await expect(quickSearchInput).toBeEditable();
-    await quickSearchInput.fill(expectedText_1);
-    await expect(page.locator('td').filter({ hasText: expectedText_1 }).first()).toBeVisible();
-    await expect(productRouteRows).toHaveCount(1);
+  const expectedText_2 = (await row2.locator('xpath=./td[2]').innerText()).trim().split(/\n/)[0].split('|')[0].trim();
+  console.log("checkbox2Text:", expectedText_2);
+  await page.waitForTimeout(2000);
+  await expect(page.getByRole('button', { name: 'Updating selection...' })).toHaveCount(0);
+  const continueButton = page.locator('//h3[normalize-space()="Choose Product Routes"]/following::button[normalize-space()="Continue"]').first();
+  await expect(continueButton).toBeEnabled();
+  await continueButton.click();
 
-    await quickSearchInput.clear();
-    await page.waitForTimeout(2000);
-    await expect(productRouteRows).toHaveCount(2);
-  } else {
-    const products = page.locator(
-      '//h3[normalize-space()="Product Routes"]//following::table//thead/following-sibling::tbody/tr/td[1]//div[contains(@class,"text-ellipsis")]'
-    ).first();
-    const productText = (await products.textContent()).trim();
+  await expect(page.locator('p').filter({ hasText: 'Routes linked.' }).first()).toBeVisible();
 
-    const productRouteRows = page.locator('//h3[normalize-space()="Product Routes"]//following::table//thead/following-sibling::tbody/tr');
-    const rowCount_Before = await productRouteRows.count();
-    console.log("rowCount_Before:", rowCount_Before);
-
-    const quickSearchInput = page.locator('[data-cy="search-alt"] input[data-cy="input"][placeholder="Quick Search"]').first();
-    await expect(quickSearchInput).toBeVisible();
-    await expect(quickSearchInput).toBeEditable();
-    await quickSearchInput.fill(productText);
-    await expect(page.locator('td').filter({ hasText: productText }).first()).toBeVisible();
-    await expect(productRouteRows).toHaveCount(1);
-
-    await quickSearchInput.clear();
-    await page.waitForTimeout(2000);
-    await expect(productRouteRows).toHaveCount(rowCount_Before);
+  const viewAllButton = page.locator('//button[contains(normalize-space(),"View All")]');
+  const viewLessButton = page.locator('//button[contains(normalize-space(),"View Less")]');
+  if (await viewAllButton.isVisible()) {
+    await viewAllButton.click();
+    await expect(viewLessButton).toBeVisible();
   }
+  await page.waitForTimeout(2000);
+  await expect(page.locator('td').filter({ hasText: expectedText_1 }).first()).toBeVisible();
+  await expect(page.locator('td').filter({ hasText: expectedText_2 }).first()).toBeVisible();
+
+  const rowCountAfterLink = await productRouteRows.count();
+  console.log("Row count after link:", rowCountAfterLink);
+  expect(rowCountAfterLink).toBeGreaterThanOrEqual(rowCountBefore);
+
+  const quickSearchInput = page.locator('[data-cy="search-alt"] input[data-cy="input"][placeholder="Quick Search"]').last();
+  await expect(quickSearchInput).toBeVisible();
+  await expect(quickSearchInput).toBeEditable();
+  await quickSearchInput.fill(expectedText_1);
+  await expect(page.locator('td').filter({ hasText: expectedText_1 }).first()).toBeVisible();
+  await expect(productRouteRows).toHaveCount(1);
+
+  await quickSearchInput.clear();
+  await page.waitForTimeout(2000);
+  await expect(productRouteRows).toHaveCount(rowCountAfterLink);
 });

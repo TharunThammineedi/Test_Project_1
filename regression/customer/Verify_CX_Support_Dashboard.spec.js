@@ -1,4 +1,4 @@
-// Verify CX Support Dashboard columns and Mine / Active Opportunities toggles
+// Verify CX Support Dashboard columns, Mine / Active toggles, and Customer Name sort
 import testData from '../../test-data.json';
 import { test, expect } from '@playwright/test';
 const { prepareSession } = require('../../helpers/sessionData');
@@ -78,4 +78,65 @@ test('Verify CX Support Dashboard @regression @set1', async ({ page }) => {
   const activeUnfilteredPageCount = Number((await lastPageButton.innerText()).trim());
   console.log(`[data] activeUnfilteredPageCount: ${activeUnfilteredPageCount}`);
   expect(activeFilteredPageCount).toBeLessThan(activeUnfilteredPageCount);
+
+  const customerNameCells = page.locator(
+    "//tr//td[2]//span[contains(normalize-space(),'Customer:')]/following-sibling::div//div[contains(@class,'text-ellipsis')]"
+  );
+
+  const sort0Button = page.getByRole('button', { name: 'Sort 0', exact: true });
+  await expect(sort0Button).toBeEnabled();
+  await sort0Button.click();
+
+  const directionInput = page.locator('input[name="rows.0.direction"][type="text"]');
+  await expect(directionInput).toBeVisible();
+  await expect(directionInput).toBeEnabled();
+  await directionInput.click();
+  const descendingOption = page.locator('li[data-label="desc"]');
+  await expect(descendingOption).toBeVisible();
+  await expect(descendingOption).toBeEnabled();
+  await descendingOption.click();
+
+  const applyButton = page.getByRole('button', { name: 'Apply', exact: true });
+  await expect(applyButton).toBeEnabled();
+  await applyButton.click();
+  await page.waitForTimeout(2000);
+
+  await expect(page.getByRole('button', { name: 'Sort 1', exact: true })).toBeEnabled();
+
+  const descRow1 = ((await customerNameCells.nth(0).innerText()) || '').trim();
+  const descRow2 = ((await customerNameCells.nth(1).innerText()) || '').trim();
+  console.log(`[data] descRow1: ${descRow1}, descRow2: ${descRow2}`);
+  expect(descRow1.localeCompare(descRow2)).toBeGreaterThanOrEqual(0);
+
+  await page.getByRole('button', { name: 'Sort 1', exact: true }).click();
+
+  await expect(directionInput).toBeVisible();
+  await expect(directionInput).toBeEnabled();
+  await directionInput.click();
+  const ascendingOption = page.locator('li[data-label="asc"]');
+  await expect(ascendingOption).toBeVisible();
+  await expect(ascendingOption).toBeEnabled();
+  await ascendingOption.click();
+
+  await expect(applyButton).toBeEnabled();
+  await applyButton.click();
+  await page.waitForTimeout(2000);
+
+  const noCustomerFirst = page.locator("//tbody/tr[1]//td[2]//span[contains(normalize-space(),'No Customer')]");
+  if (await noCustomerFirst.isVisible()) {
+    await expect(noCustomerFirst).toBeVisible();
+  } else {
+    const customerName = page.locator("//tbody/tr[1]//td[2]//span[contains(normalize-space(),'Customer:')]/following-sibling::div//div[contains(@class,'text-ellipsis')]");
+    const name = ((await customerName.innerText()) || '').trim();
+    expect(/^A/i.test(name)).toBeTruthy();
+  }
+
+  await page.getByRole('button', { name: 'Sort 1', exact: true }).click();
+
+  const resetSortButton = page.locator("//p[normalize-space()='Reset']/parent::button").last();
+  await expect(resetSortButton).toBeEnabled();
+  await resetSortButton.click();
+  await page.waitForTimeout(2000);
+
+  await expect(page.getByRole('button', { name: 'Sort 0', exact: true })).toBeVisible();
 });

@@ -61,41 +61,150 @@ test('Create PrePress from Product Item @regression @set2 @mainflow', async ({ p
 
   const goToPrepressRequestButton = page.getByRole('button', { name: 'Go to Prepress Request', exact: true });
   const newPrepressRequestButton = page.getByRole('button', { name: 'New Prepress Request', exact: true });
-  await newPrepressRequestButton.click();
 
-  if (!(await goToPrepressRequestButton.isVisible())) {
+  const prepressTableRows = page.locator('//h3[normalize-space()="Prepress Request"]/following::table[1]//tbody/tr');
+  const noPrepressText = page.locator('//*[contains(normalize-space(.),"doesn\'t have any prepress request")]').first();
+  const prepressCount = (await noPrepressText.isVisible()) ? 0 : await prepressTableRows.count();
+  console.log(`[data] prepressCount: ${prepressCount}`);
+
+  let prepressPage = page;
+
+  if (prepressCount === 0) {
+    await expect(newPrepressRequestButton).toBeVisible();
     await expect(newPrepressRequestButton).toBeEnabled();
 
-    const requestNumberSpan = page.locator('//div[@id="info-prepress-queue"]//span[contains(normalize-space(),"Request")]').first();
-    await expect(requestNumberSpan).toBeVisible();
-    const requestNumberText = await requestNumberSpan.textContent();
-    const requestNumber = requestNumberText.trim().split('#')[1];
-    console.log(`[data] requestNumber: ${requestNumber}`);
+    const [newPrepressPage] = await Promise.all([
+      page.context().waitForEvent('page'),
+      newPrepressRequestButton.click()
+    ]);
+    prepressPage = newPrepressPage;
+    await prepressPage.waitForLoadState('domcontentloaded');
+    await prepressPage.waitForTimeout(2000);
 
-    await page.reload();
-    await page.waitForLoadState('domcontentloaded');
+    const continueButton = prepressPage.locator('//button[normalize-space()="Continue"]').last();
+    await expect(continueButton).toBeVisible();
+    await expect(continueButton).toBeEnabled();
 
-    const artSpan = page.locator('//div[@id="info-prepress-queue"]//span[contains(normalize-space(),"ART")]').first();
-    await expect(artSpan).toBeVisible();
-    const artNumberText = await artSpan.textContent();
-    const artNumber = artNumberText.split(' ')[1].trim();
-    console.log(`[data] artNumber: ${artNumber}`);
+    const selectCustomer = prepressPage.locator('//p[normalize-space()="Select Customer"]').first();
+    if (await selectCustomer.isVisible()) {
+      await selectCustomer.click();
 
-    const waitingForArtBadge = page.locator('[id="badge-Waiting for Art"]');
-    await expect(waitingForArtBadge).toBeVisible();
-    await expect(waitingForArtBadge).toBeEnabled();
-    await waitingForArtBadge.click();
+      const quickSearchInput = prepressPage
+        .locator("//span[normalize-space()='Customer Only']/ancestor::div[3]//input[@placeholder='Quick Search']")
+        .first();
+      await expect(quickSearchInput).toBeVisible();
+      await expect(quickSearchInput).toBeEditable();
+      await quickSearchInput.fill(testData.quickSearch);
 
-    const draftBadge = page.locator('[id="badge-Draft"]');
-    await expect(draftBadge).toBeVisible();
+      const customerCell = prepressPage.locator('td').filter({ hasText: testData.quickSearch }).first();
+      await expect(customerCell).toBeVisible();
+      await expect(customerCell).toBeEnabled();
+      await prepressPage.waitForTimeout(4000);
+      await customerCell.click();
 
-    const openLink = page.locator('a[x-tooltip="Open"]');
-    await expect(openLink).toBeVisible();
-    await expect(openLink).toBeEnabled();
-    await openLink.click();
+      const unlinkButton = prepressPage.getByRole('button', { name: 'Unlink', exact: true });
+      await expect(unlinkButton).toBeVisible();
 
-    const requestNumberSpanAgain = page.locator('span').filter({ hasText: new RegExp(`^Request #${requestNumber}$`) }).first();
-    await expect(requestNumberSpanAgain).toBeVisible();
-    await requestNumberSpanAgain.click();
+      const continueCustomerPickerButton = prepressPage.getByRole('button', { name: 'Continue', exact: true }).first();
+      await expect(continueCustomerPickerButton).toBeEnabled();
+      await continueCustomerPickerButton.click();
+
+      const selectedCustomerButton = prepressPage.getByRole('button', { name: testData.customerName, exact: true });
+      await expect(selectedCustomerButton).toBeVisible();
+    }
+    await prepressPage.waitForTimeout(4000);
+    const chooseProductRoutes = prepressPage.locator('//p[text()="Choose Product Routes"]').first();
+    if (await chooseProductRoutes.isVisible()) {
+      await chooseProductRoutes.click();
+
+      const productRoutesQuickSearch = prepressPage.locator('input[placeholder="Quick Search"]').first();
+      await expect(productRoutesQuickSearch).toBeVisible();
+      await expect(productRoutesQuickSearch).toBeEditable();
+      await productRoutesQuickSearch.fill(testData.customerName);
+      await prepressPage.waitForTimeout(2000);
+
+      const secondRouteRow = prepressPage.locator('//h3[normalize-space()="Choose Product Routes"]/following::tbody/tr').nth(1);
+      await expect(secondRouteRow).toBeVisible();
+      await secondRouteRow.click();
+      await prepressPage.waitForTimeout(3000);
+
+      const continueRoutesButton = prepressPage
+        .locator('//h3[normalize-space()="Choose Product Routes"]/following::button[.//span[normalize-space()="Continue"]]')
+        .first();
+      await expect(continueRoutesButton).toBeVisible();
+      await expect(continueRoutesButton).toBeEnabled();
+      await continueRoutesButton.click({ force: true });
+    }
+
+    const continueLastButton = prepressPage.getByRole('button', { name: 'Continue', exact: true }).last();
+    await expect(continueLastButton).toBeEnabled();
+    await continueLastButton.click();
+  } else {
+    if (await goToPrepressRequestButton.isVisible()) {
+      await expect(goToPrepressRequestButton).toBeEnabled();
+      await goToPrepressRequestButton.click();
+    } else {
+      await expect(prepressTableRows.first()).toBeVisible();
+      await prepressTableRows.first().click();
+    }
+    await page.waitForTimeout(2000);
   }
+
+  await prepressPage.waitForTimeout(2000);
+
+  const requestNumberSpan = prepressPage.locator('//div[@id="info-prepress-queue"]//span[contains(normalize-space(),"Request")]').first();
+  await expect(requestNumberSpan).toBeVisible();
+  const requestNumberText = ((await requestNumberSpan.textContent()) || '').trim();
+  const requestNumber = (requestNumberText.split('#')[1] || '').trim();
+  console.log(`[data] requestNumber: ${requestNumber}`);
+  expect(requestNumber.length).toBeGreaterThan(0);
+
+  await prepressPage.reload();
+  await prepressPage.waitForLoadState('domcontentloaded');
+
+  const waitingForArtBadge = prepressPage.locator('[id="badge-Waiting for Art"]').first();
+  await expect(waitingForArtBadge).toBeVisible();
+  await expect(waitingForArtBadge).toBeEnabled();
+  await waitingForArtBadge.click();
+
+  const draftBadge = prepressPage.locator('[id="badge-Draft"]').first();
+  await expect(draftBadge).toBeVisible();
+
+  const openLink = prepressPage
+    .locator(`//span[contains(normalize-space(.),"${firstProductItemText}")]/following::div[@x-tooltip="Open"][1]/parent::a`)
+    .first();
+  await expect(openLink).toBeVisible();
+  await expect(openLink).toBeEnabled();
+  await openLink.click();
+  await prepressPage.waitForLoadState('domcontentloaded');
+  await prepressPage.waitForTimeout(2000);
+
+  const productItemHeading = prepressPage.locator('div').filter({ hasText: `${firstProductItemText}-Product Item` }).first();
+  await expect(productItemHeading).toBeVisible();
+
+  const productRouteHeading = prepressPage.locator('h3').filter({ hasText: 'Product Route' }).first();
+  await expect(productRouteHeading).toBeVisible();
+
+  const productRouteWaitingBadge = prepressPage
+    .locator('//h3[normalize-space()="Product Route"]/following::table[1]//span[@id="badge-Waiting for Art"]')
+    .first();
+  await expect(productRouteWaitingBadge).toBeVisible();
+  const productRouteId = ((await productRouteWaitingBadge.locator('xpath=ancestor::td[1]').innerText()) || '')
+    .replace(/Waiting for Art/i, '')
+    .trim();
+  console.log(`[data] productRouteId: ${productRouteId}`);
+  expect(productRouteId.length).toBeGreaterThan(0);
+
+  const artSetSpan = prepressPage
+    .locator('//h3[normalize-space()="Art Sets"]/following::table[1]//span[starts-with(normalize-space(),"ART")]')
+    .first();
+  await expect(artSetSpan).toBeVisible();
+  const artSetId = ((await artSetSpan.innerText()) || '').trim();
+  console.log(`[data] artSetId: ${artSetId}`);
+  expect(artSetId).toMatch(/^ART\d+$/);
+
+  const artSetWaitingBadge = prepressPage
+    .locator('//h3[normalize-space()="Art Sets"]/following::table[1]//span[@id="badge-Waiting for Art"]')
+    .first();
+  await expect(artSetWaitingBadge).toBeVisible();
 });

@@ -13,7 +13,7 @@ module.exports = defineConfig({
   fullyParallel: false,
   forbidOnly: isCI,
   workers: isCI ? 4 : 1,
-  retries: 1,
+  retries: 0,
   timeout: 360000,
   expect: {
     timeout: 120000,
@@ -32,7 +32,7 @@ module.exports = defineConfig({
     video: 'retain-on-failure',
     trace: isCI ? 'retain-on-failure' : 'on',
     launchOptions: {
-      slowMo: 1500,
+      slowMo: 1000,
     },
   },
   projects: [

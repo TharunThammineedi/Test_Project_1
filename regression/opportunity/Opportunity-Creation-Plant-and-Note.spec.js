@@ -90,11 +90,11 @@ test.describe('Opportunity Creation @regression', () => {
     await page.waitForLoadState('domcontentloaded');
     await quickSearchInput.fill(testData.quickSearch);
 
-    const charlesLecrecCell = page.locator('td').filter({ hasText: 'Charles Lecrec' }).first();
-    await expect(charlesLecrecCell).toBeVisible();
-    await expect(charlesLecrecCell).toBeEnabled();
+    const customerCell = page.locator('td').filter({ hasText: testData.quickSearch }).first();
+    await expect(customerCell).toBeVisible();
+    await expect(customerCell).toBeEnabled();
     await page.waitForTimeout(4000);
-    await charlesLecrecCell.click();
+    await customerCell.click();
 
     const unlinkButton = page.getByRole('button', { name: 'Unlink', exact: true });
     await expect(unlinkButton).toBeVisible();
@@ -103,7 +103,7 @@ test.describe('Opportunity Creation @regression', () => {
     await expect(continueCustomerPickerButton).toBeEnabled();
     await continueCustomerPickerButton.click();
 
-    const selectedCustomerButton = page.getByRole('button', { name: 'Charles Lecrec', exact: true });
+    const selectedCustomerButton = page.getByRole('button', { name: testData.customerName, exact: true });
     await expect(selectedCustomerButton).toBeVisible();
 
     const continueButton = page.getByRole('button', { name: 'Continue', exact: true });
@@ -185,6 +185,101 @@ test.describe('Opportunity Creation @regression', () => {
 
     const noteContent = page.locator('div').filter({ hasText: testData.awaitPageLocatorQlEditorFill }).first();
     await expect(noteContent).toBeVisible();
+  });
+
+  test('Edit Opportunity from Preview @regression @set1', async () => {
+    test.setTimeout(720000);
+    const session = prepareSession({ force: true });
+    Object.assign(testData, session);
+    console.log(`[data] opportunityName: ${session.opportunityName}`);
+    console.log(`[data] description: ${session.description}`);
+
+    const btn = page.locator('(//button[normalize-space()="Customer"])[1]');
+    await btn.click();
+
+    const opportunitiesLink = page.getByRole('link', { name: 'Opportunities', exact: true });
+    await expect(opportunitiesLink).toBeVisible();
+    await expect(opportunitiesLink).toBeEnabled();
+    await opportunitiesLink.click();
+    await page.waitForLoadState('domcontentloaded');
+
+    const newOpportunityButton = page.getByRole('button', { name: 'New Opportunity', exact: true });
+    await expect(newOpportunityButton).toBeEnabled();
+    await newOpportunityButton.click();
+
+    const nameRequiredInput = page.locator('input[name="project.name"][type="text"]');
+    await expect(nameRequiredInput).toBeVisible();
+    await expect(nameRequiredInput).toBeEditable();
+    await nameRequiredInput.fill(session.opportunityName);
+
+    const descriptionTextarea = page.locator('textarea[name="project.description"]');
+    await expect(descriptionTextarea).toBeVisible();
+    await expect(descriptionTextarea).toBeEditable();
+    await descriptionTextarea.fill(session.description);
+
+    const selectCustomerButton = page.getByRole('button', { name: 'Select Customer', exact: true });
+    await expect(selectCustomerButton).toBeEnabled();
+    await selectCustomerButton.click();
+    await page.waitForTimeout(2000);
+
+    const quickSearchInput = page.locator("//span[normalize-space()='Customer Only']/ancestor::div[3]//input[@placeholder='Quick Search']");
+    await page.waitForLoadState('domcontentloaded');
+    await quickSearchInput.fill(testData.quickSearch);
+
+    const customerCell = page.locator('td').filter({ hasText: testData.quickSearch }).first();
+    await expect(customerCell).toBeVisible();
+    await expect(customerCell).toBeEnabled();
+    await page.waitForTimeout(4000);
+    await customerCell.click();
+
+    const unlinkButton = page.getByRole('button', { name: 'Unlink', exact: true });
+    await expect(unlinkButton).toBeVisible();
+
+    const continueCustomerPickerButton = page.getByRole('button', { name: 'Continue', exact: true }).first();
+    await expect(continueCustomerPickerButton).toBeEnabled();
+    await continueCustomerPickerButton.click();
+
+    const selectedCustomerButton = page.getByRole('button', { name: testData.customerName, exact: true });
+    await expect(selectedCustomerButton).toBeVisible();
+
+    const continueButton = page.getByRole('button', { name: 'Continue', exact: true });
+    await expect(continueButton).toBeEnabled();
+    await continueButton.click();
+
+    const yesAddRecordButton = page.getByRole('button', { name: 'Yes, add record', exact: true });
+    await expect(yesAddRecordButton).toBeVisible();
+    await expect(page.getByText(session.opportunityName, { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(session.description, { exact: true }).first()).toBeVisible();
+
+    const noINeedToEditButton = page.locator("//p[normalize-space()='No, I need to edit']/parent::button");
+    await expect(noINeedToEditButton).toBeVisible();
+    await expect(noINeedToEditButton).toBeEnabled();
+    await noINeedToEditButton.click();
+
+    await expect(nameRequiredInput).toHaveValue(session.opportunityName);
+    await expect(descriptionTextarea).toHaveValue(session.description);
+    await expect(selectedCustomerButton).toBeVisible();
+
+    const editedName = `${session.opportunityName} edited`;
+    const editedDescription = `${session.description} edited`;
+    await nameRequiredInput.fill(editedName);
+    await descriptionTextarea.fill(editedDescription);
+    console.log(`[data] editedName: ${editedName}`);
+    console.log(`[data] editedDescription: ${editedDescription}`);
+
+    await expect(continueButton).toBeEnabled();
+    await continueButton.click();
+
+    await expect(yesAddRecordButton).toBeVisible();
+    await expect(page.getByText(editedName, { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(editedDescription, { exact: true }).first()).toBeVisible();
+
+    await expect(yesAddRecordButton).toBeEnabled();
+    await yesAddRecordButton.click();
+
+    await page.waitForLoadState('domcontentloaded');
+    const createdOpportunityRow = page.getByText(editedName, { exact: true }).first();
+    await expect(createdOpportunityRow).toBeVisible();
   });
 
   test('Opportunity creation with invalid data @regression', async () => {

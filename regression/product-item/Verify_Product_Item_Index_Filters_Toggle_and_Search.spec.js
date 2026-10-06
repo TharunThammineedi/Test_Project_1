@@ -173,6 +173,11 @@ test('Verify Product Item Index Filters, Toggle and Search @regression @set2', a
   await activeOnlyToggle.click();
   await page.waitForTimeout(3000);
 
+  const isActiveOnlyEnabledAfterToggleOn = await activeOnlyToggle.evaluate((button) =>
+    button.classList.contains('bg-denim-blue-600')
+  );
+  await expect(isActiveOnlyEnabledAfterToggleOn).toBe(true);
+
   await expect(filtersButton).toBeEnabled();
   await filtersButton.click();
 
@@ -180,22 +185,24 @@ test('Verify Product Item Index Filters, Toggle and Search @regression @set2', a
   await columnSelect.selectOption('Customer');
 
   const operatorSelect = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select");
-  await operatorSelect.selectOption('contains');
+  await operatorSelect.selectOption('is equal to');
 
   const valueSelect = page.getByPlaceholder('value');
-  await valueSelect.fill(testData.quickSearch);
+  await valueSelect.fill(testData.customerName);
 
   const applyButton = page.getByRole('button', { name: 'Apply', exact: true });
   await expect(applyButton).toBeEnabled();
   await applyButton.click();
 
   await expect(page.getByRole('button', { name: 'Filters 1', exact: true })).toBeVisible();
+  await page.waitForTimeout(2000);
 
-  const filteredRows = page.locator('//th[normalize-space()="Customer"]//following::tbody//tr');
-  await expect(filteredRows.first()).toBeVisible();
-  const filteredRowTexts = await filteredRows.allTextContents();
-  for (const text of filteredRowTexts) {
-    expect(text.toLowerCase()).toContain(testData.quickSearch.toLowerCase());
+  const customerCells = page.locator(`//tbody/tr/td[contains(normalize-space(.), "${testData.customerName}")]`);
+  await expect(customerCells.first()).toBeVisible();
+  const customerCellTexts = await customerCells.allTextContents();
+  for (const text of customerCellTexts) {
+    const normalized = text.replace(/\s+/g, ' ').trim();
+    expect(normalized).toContain(testData.customerName);
   }
 
   await expect(resetButton).toBeEnabled();

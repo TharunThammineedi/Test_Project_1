@@ -67,12 +67,38 @@ test('Set Ancillary Charges in RFP @regression @set1', async ({ page }) => {
 
   await page.waitForLoadState('domcontentloaded');
 
-  const mineFilter = page.locator('//span[normalize-space()="Mine"]//following::button[1]');
-  await expect(mineFilter).toBeVisible();
-  await mineFilter.click();
+  const loggedInUserName = (
+    await page.locator('#user-menu-button .font-semibold').first().innerText()
+  ).trim();
+  console.log(`[data] loggedInUserName: ${loggedInUserName}`);
+  expect(loggedInUserName.length).toBeGreaterThan(0);
+
+  const filtersButton = page.getByRole('button', { name: 'Filters 0', exact: true });
+  await expect(filtersButton).toBeEnabled();
+  await filtersButton.click();
+
+  const columnSelect = page.locator("xpath=//option[normalize-space(.)='Column']/ancestor::select");
+  await columnSelect.click();
+  await columnSelect.selectOption("Requested By");
+
+  const operatorSelect = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select");
+  await operatorSelect.click();
+  await operatorSelect.selectOption("is equal to");
+
+  const valueSelect = page.getByPlaceholder('value');
+  await valueSelect.fill(loggedInUserName);
+
+  const applyButton = page.getByRole('button', { name: 'Apply', exact: true });
+  await expect(applyButton).toBeEnabled();
+  await applyButton.click();
+
+  await expect(page.getByRole('button', { name: 'Filters 1', exact: true })).toBeVisible();
+  await page.waitForTimeout(2000);
+
   const firstRfpCell = page.locator('//tbody//tr[1]//td[2]');
   await expect(firstRfpCell).toBeVisible();
   const rfpNumber = (await firstRfpCell.innerText()).trim();
+  console.log(`[data] RFP Number: ${rfpNumber}`);
   await firstRfpCell.click();
   await page.waitForTimeout(2000);
 
@@ -85,7 +111,7 @@ test('Set Ancillary Charges in RFP @regression @set1', async ({ page }) => {
 
   await expect(page.getByRole('heading', { name: 'Choose Ancillary Item' })).toBeVisible();
 
-  const itemChangeChargeCheckbox = page.locator('//label[normalize-space()="Item change charge"]/input');
+  const itemChangeChargeCheckbox = page.locator('//label[normalize-space()="Item Change Charge"]/input');
   await itemChangeChargeCheckbox.check();
   await expect(itemChangeChargeCheckbox).toBeChecked();
 

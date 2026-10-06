@@ -72,6 +72,12 @@ test('Convert RFP to Estimate @regression @set1 @mainflow', async ({ page }) => 
   }
   await expect(unassignedToggle).toHaveClass(/bg-denim-blue-600/);
 
+  const loggedInUserName = (
+    await page.locator('#user-menu-button .font-semibold').first().innerText()
+  ).trim();
+  console.log(`[data] loggedInUserName: ${loggedInUserName}`);
+  expect(loggedInUserName.length).toBeGreaterThan(0);
+
   const filtersButton = page.getByRole('button', { name: 'Filters 0', exact: true });
   await expect(filtersButton).toBeEnabled();
   await filtersButton.click();
@@ -82,10 +88,10 @@ test('Convert RFP to Estimate @regression @set1 @mainflow', async ({ page }) => 
 
   const operatorSelect = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select");
   await operatorSelect.click();
-  await operatorSelect.selectOption("contains");
+  await operatorSelect.selectOption("is equal to");
 
   const valueSelect = page.getByPlaceholder('value');
-  await valueSelect.fill("Ranga Sharan Rohith");
+  await valueSelect.fill(loggedInUserName);
 
   const addAFilterButton = page.locator('p').filter({ hasText: 'Add A Filter' });
   await addAFilterButton.click();
@@ -117,7 +123,7 @@ test('Convert RFP to Estimate @regression @set1 @mainflow', async ({ page }) => 
   const column11 = page.locator('//thead/tr/th[11]//following::tbody/tr/td[11]/div');
   const column11Text = await column11.allTextContents();
   for (const text of column11Text) {
-    expect(text.trim()).toBe("Ranga Sharan Rohith");
+    expect(text.trim()).toBe(loggedInUserName);
   }
 
   const firstRfpCell = page.locator('//tbody//tr[1]//td[2]');
@@ -139,7 +145,7 @@ test('Convert RFP to Estimate @regression @set1 @mainflow', async ({ page }) => 
   await expect(selectUserButton).toBeVisible();
   await selectUserButton.click();
 
-  const rohithRangaCell = page.locator('td').filter({ hasText: 'Ranga Sharan Rohith' }).first();
+  const rohithRangaCell = page.locator('td').filter({ hasText: loggedInUserName }).first();
   await expect(rohithRangaCell).toBeVisible();
   await rohithRangaCell.click();
 
@@ -147,7 +153,7 @@ test('Convert RFP to Estimate @regression @set1 @mainflow', async ({ page }) => 
   await expect(continueCustomerButton).toBeEnabled();
   await continueCustomerButton.click();
 
-  const rohithRangaButton = page.getByRole('button', { name: 'Ranga Sharan Rohith', exact: true });
+  const rohithRangaButton = page.getByRole('button', { name: loggedInUserName, exact: true });
   await expect(rohithRangaButton).toBeVisible();
 
   const convertToEstimateButton = page.locator('button').filter({ hasText: 'Convert to Estimate' });

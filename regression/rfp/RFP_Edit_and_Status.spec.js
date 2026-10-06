@@ -52,28 +52,47 @@ test.describe('RFP Edit and Status @regression', () => {
     await expect(rfpMenuLink).toBeEnabled();
     await rfpMenuLink.click();
 
-    const mineFilter = page.locator('//span[normalize-space()="Mine"]//following::button[1]');
-    await expect(mineFilter).toBeVisible();
-    await mineFilter.click();
+    const loggedInUserName = (
+      await page.locator('#user-menu-button .font-semibold').first().innerText()
+    ).trim();
+    console.log(`[data] loggedInUserName: ${loggedInUserName}`);
+    expect(loggedInUserName.length).toBeGreaterThan(0);
 
     const filtersButton = page.getByRole('button', { name: 'Filters 0', exact: true });
     await expect(filtersButton).toBeEnabled();
     await filtersButton.click();
 
-    const columnSelect = page.locator('select[data-flux-select-native][x-model="selection.column"]').first();
-    await columnSelect.selectOption("status");
+    const columnSelect = page.locator("xpath=//option[normalize-space(.)='Column']/ancestor::select");
+    await columnSelect.click();
+    await columnSelect.selectOption("Requested By");
 
     const operatorSelect = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select");
+    await operatorSelect.click();
     await operatorSelect.selectOption("is equal to");
 
-    const valueSelect = page.locator("xpath=//option[normalize-space(.)='Value']/ancestor::select");
-    await valueSelect.selectOption("requested");
+    const valueSelect = page.getByPlaceholder('value');
+    await valueSelect.fill(loggedInUserName);
+
+    const addAFilterButton = page.locator('p').filter({ hasText: 'Add A Filter' });
+    await addAFilterButton.click();
+
+    const columnSelect_2 = page.locator("xpath=//option[normalize-space(.)='Column']/ancestor::select").last();
+    await columnSelect_2.click();
+    await columnSelect_2.selectOption("status");
+
+    const operatorSelect_2 = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select").last();
+    await operatorSelect_2.click();
+    await operatorSelect_2.selectOption("is equal to");
+
+    const valueSelect_2 = page.locator("xpath=//option[normalize-space(.)='Value']/ancestor::select").last();
+    await valueSelect_2.click();
+    await valueSelect_2.selectOption("requested");
 
     const applyButton = page.getByRole('button', { name: 'Apply', exact: true });
     await expect(applyButton).toBeEnabled();
     await applyButton.click();
 
-    await expect(page.getByRole('button', { name: 'Filters 1', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Filters 2', exact: true })).toBeVisible();
 
     const firstRfpCell = page.locator('//tbody//tr[1]//td[2]');
     await expect(firstRfpCell).toBeVisible();
@@ -149,28 +168,56 @@ test.describe('RFP Edit and Status @regression', () => {
 
     await page.waitForLoadState('domcontentloaded');
 
-    const mineFilter = page.locator('//span[normalize-space()="Mine"]//following::button[1]');
-    await expect(mineFilter).toBeVisible();
-    await mineFilter.click();
+    const loggedInUserName = (
+      await page.locator('#user-menu-button .font-semibold').first().innerText()
+    ).trim();
+    console.log(`[data] loggedInUserName: ${loggedInUserName}`);
+    expect(loggedInUserName.length).toBeGreaterThan(0);
 
     const filtersButton = page.getByRole('button', { name: 'Filters 0', exact: true });
     await expect(filtersButton).toBeEnabled();
     await filtersButton.click();
 
-    const columnSelect = page.locator('select[data-flux-select-native][x-model="selection.column"]').first();
-    await columnSelect.selectOption("status");
+    const columnSelect = page.locator("xpath=//option[normalize-space(.)='Column']/ancestor::select");
+    await columnSelect.click();
+    await columnSelect.selectOption("Requested By");
 
     const operatorSelect = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select");
+    await operatorSelect.click();
     await operatorSelect.selectOption("is equal to");
 
-    const valueSelect = page.locator("xpath=//option[normalize-space(.)='Value']/ancestor::select");
-    await valueSelect.selectOption("draft");
+    const valueSelect = page.getByPlaceholder('value');
+    await valueSelect.fill(loggedInUserName);
+
+    const addAFilterButton = page.locator('p').filter({ hasText: 'Add A Filter' });
+    await addAFilterButton.click();
+
+    const columnSelect_2 = page.locator("xpath=//option[normalize-space(.)='Column']/ancestor::select").last();
+    await columnSelect_2.click();
+    await columnSelect_2.selectOption("status");
+
+    const operatorSelect_2 = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select").last();
+    await operatorSelect_2.click();
+    await operatorSelect_2.selectOption("is equal to");
+
+    const valueSelect_2 = page.locator("xpath=//option[normalize-space(.)='Value']/ancestor::select").last();
+    await valueSelect_2.click();
+    await valueSelect_2.selectOption("draft");
 
     const applyButton = page.getByRole('button', { name: 'Apply', exact: true });
     await expect(applyButton).toBeEnabled();
     await applyButton.click();
 
-    await expect(page.getByRole('button', { name: 'Filters 1', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Filters 2', exact: true })).toBeVisible();
+
+    const activeToggle = page.locator('//span[normalize-space()="Active Only"]/..//div/button').first();
+    await expect(activeToggle).toBeVisible();
+    const isActiveOn = await activeToggle.evaluate((el) => el.classList.contains('bg-denim-blue-600'));
+    if (isActiveOn) {
+      await activeToggle.click();
+    }
+    await expect(activeToggle).toHaveClass(/bg-gray-200/);
+    await page.waitForTimeout(2000);
 
     const firstRfpCell = page.locator('//tbody//tr[1]//td[2]');
     await expect(firstRfpCell).toBeVisible();
@@ -203,7 +250,7 @@ test.describe('RFP Edit and Status @regression', () => {
     await expect(estimateSaveButton).toBeEnabled();
     await estimateSaveButton.click();
 
-    const estimateUpdatedMessage = page.locator('p').filter({ hasText: 'Estimate updated successfully.' }).first();
+    const estimateUpdatedMessage = page.locator('p').filter({ hasText: 'Request for Proposal updated successfully.' }).first();
     await expect(estimateUpdatedMessage).toBeVisible();
 
     await expect(estimateEditButton).toBeEnabled();

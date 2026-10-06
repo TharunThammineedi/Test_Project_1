@@ -332,12 +332,10 @@ test('Create Estimate from Opportunity @regression @set1 @mainflow', async ({ pa
   await expect(estimateHeading).toBeVisible();
   await expect(estimateHeading).toContainText(estimateNumber);
   await expect(estimateHeading).toBeEnabled();
-  await estimateHeading.click();
 
   const opportunityLinkDiv = estimatePage.locator('div').filter({ hasText: `Opportunity ${opportunityName}` }).first();
   await expect(opportunityLinkDiv).toBeVisible();
   await expect(opportunityLinkDiv).toBeEnabled();
-  await opportunityLinkDiv.click();
 
   const openLink = estimatePage.locator("//div[normalize-space()='Opportunity']/following-sibling::div//a[.//div[@x-tooltip='Open']]");
   await expect(openLink).toBeVisible();
@@ -347,11 +345,8 @@ test('Create Estimate from Opportunity @regression @set1 @mainflow', async ({ pa
   const oppBackHeading = estimatePage.locator('div').filter({ hasText: `${opportunityNumber} - Opportunity` }).first();
   await expect(oppBackHeading).toBeVisible();
   await expect(oppBackHeading).toBeEnabled();
-  await oppBackHeading.click();
 
   const estimateOnOppDiv = estimatePage.locator('div').filter({ hasText: estimateNumber }).first();
   await expect(estimateOnOppDiv).toBeVisible();
   await expect(estimateOnOppDiv).toBeEnabled();
-  await estimateOnOppDiv.click();
-  await estimateOnOppDiv.click();
 });

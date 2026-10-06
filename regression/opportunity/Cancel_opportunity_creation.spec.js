@@ -71,11 +71,11 @@ test.describe('Cancel Opportunity Creation @regression', () => {
     await page.waitForLoadState('domcontentloaded');
     await quickSearchInput.fill(testData.quickSearch);
 
-    const charlesLecrecCell = page.locator('td').filter({ hasText: 'Charles Lecrec' }).first();
-    await expect(charlesLecrecCell).toBeVisible();
-    await expect(charlesLecrecCell).toBeEnabled();
+    const customerCell = page.locator('td').filter({ hasText: testData.quickSearch }).first();
+    await expect(customerCell).toBeVisible();
+    await expect(customerCell).toBeEnabled();
     await page.waitForTimeout(4000);
-    await charlesLecrecCell.click();
+    await customerCell.click();
 
     const unlinkButton = page.getByRole('button', { name: 'Unlink', exact: true });
     await expect(unlinkButton).toBeVisible();
@@ -86,7 +86,7 @@ test.describe('Cancel Opportunity Creation @regression', () => {
     await expect(continueButton).toBeEnabled();
     await continueButton.click();
 
-    const selectedCustomerButton = page.getByRole('button', { name: 'Charles Lecrec', exact: true });
+    const selectedCustomerButton = page.getByRole('button', { name: testData.customerName, exact: true });
     await expect(selectedCustomerButton).toBeVisible();
     await expect(selectedCustomerButton).toBeEnabled();
 
@@ -136,11 +136,11 @@ test.describe('Cancel Opportunity Creation @regression', () => {
     await page.waitForLoadState('domcontentloaded');
     await quickSearchInput.fill(testData.quickSearch);
 
-    const charlesLecrecCell = page.locator('td').filter({ hasText: 'Charles Lecrec' }).first();
-    await expect(charlesLecrecCell).toBeVisible();
-    await expect(charlesLecrecCell).toBeEnabled();
+    const customerCell = page.locator('td').filter({ hasText: testData.quickSearch }).first();
+    await expect(customerCell).toBeVisible();
+    await expect(customerCell).toBeEnabled();
     await page.waitForTimeout(4000);
-    await charlesLecrecCell.click();
+    await customerCell.click();
 
     const unlinkButton = page.getByRole('button', { name: 'Unlink', exact: true });
     await expect(unlinkButton).toBeVisible();
@@ -151,7 +151,7 @@ test.describe('Cancel Opportunity Creation @regression', () => {
     await expect(continueButton).toBeEnabled();
     await continueButton.click();
 
-    const selectedCustomerButton = page.getByRole('button', { name: 'Charles Lecrec', exact: true });
+    const selectedCustomerButton = page.getByRole('button', { name: testData.customerName, exact: true });
     await expect(selectedCustomerButton).toBeVisible();
     await expect(selectedCustomerButton).toBeEnabled();
 

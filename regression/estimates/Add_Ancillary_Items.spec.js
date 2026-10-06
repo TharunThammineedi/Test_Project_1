@@ -97,7 +97,7 @@ const selectCustomerButton = page.getByRole('button', {
 
   const customerRadio = page.locator(
     'input[name="datagrid-radio-selection"][type="radio"]'
-  );
+  ).first();
 
   await customerRadio.check();
   await expect(customerRadio).toBeChecked();

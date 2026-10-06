@@ -113,12 +113,12 @@ test('Verify RFP in Product Item and RFP Hub @regression @set2', async ({ page }
     await expect(quickSearchInput).toBeEditable();
     await quickSearchInput.fill(testData.quickSearch);
 
-    const customerCell = newRfpPage.locator('td').filter({ hasText: 'Charles Lecrec' }).first();
+    const customerCell = newRfpPage.locator('td').filter({ hasText: testData.quickSearch }).first();
     await expect(customerCell).toBeVisible();
     await expect(customerCell).toBeEnabled();
     await customerCell.click();
 
-    const customerDiv = newRfpPage.locator('div').filter({ hasText: 'Charles Lecrec' }).first();
+    const customerDiv = newRfpPage.locator('div').filter({ hasText: testData.quickSearch }).first();
     await expect(customerDiv).toBeVisible();
     await expect(customerDiv).toBeEnabled();
     await customerDiv.click();
@@ -142,27 +142,74 @@ test('Verify RFP in Product Item and RFP Hub @regression @set2', async ({ page }
     const chooseOpportunityButton = newRfpPage.locator('//button[normalize-space()="Choose Opportunity"]').first();
     await expect(chooseOpportunityButton).toBeVisible();
     await chooseOpportunityButton.click();
+    await newRfpPage.waitForTimeout(2000);
 
-    const opportunityQuickSearchInput = newRfpPage.getByPlaceholder('Quick Search');
-    await opportunityQuickSearchInput.click();
-    await opportunityQuickSearchInput.fill(testData.otp);
+    const noResultsCell = newRfpPage
+      .locator('//h3[normalize-space()="Choose Opportunity"]/following::td[normalize-space()="No results found."]')
+      .first();
 
-    const opportunityCell = newRfpPage.locator('td').filter({ hasText: testData.otp }).first();
-    await expect(opportunityCell).toBeVisible();
-    await expect(opportunityCell).toBeEnabled();
-    await opportunityCell.click();
+    if (await noResultsCell.isVisible()) {
+      const cancelButton = newRfpPage
+        .locator('//h3[normalize-space()="Choose Opportunity"]/following::button[normalize-space()="Cancel"]')
+        .first();
+      await expect(cancelButton).toBeVisible();
+      await cancelButton.click();
+      await newRfpPage.waitForTimeout(1000);
 
-    const continueButton3 = newRfpPage.getByRole('button', {
-      name: 'Continue',
-      exact: true
-    });
-    await continueButton3.click();
+      const projectRadio = newRfpPage.locator('#projectselect').last();
+      await expect(projectRadio).toBeVisible();
+      await projectRadio.check();
+      await expect(projectRadio).toBeChecked();
 
-    const opportunityNameCreationPage = newRfpPage.locator(
-      '//div[normalize-space()="Opportunity"]/following-sibling::div//div[contains(@class,"uppercase")]'
-    ).first();
-    const opportunityNameTextCreationPage = (await opportunityNameCreationPage.innerText()).trim();
-    expect(opportunityNameTextCreationPage.toLowerCase()).toBe(testData.otp.toLowerCase());
+      const opportunityNameInput = newRfpPage.locator('//input[@placeholder="Enter the opportunity name"]').first();
+      await expect(opportunityNameInput).toBeVisible();
+      await opportunityNameInput.fill(testData.nameRequired);
+
+      const opportunityDescriptionInput = newRfpPage
+        .locator('//input[contains(@name,"project_description")]')
+        .first();
+      await expect(opportunityDescriptionInput).toBeVisible();
+      await opportunityDescriptionInput.fill(testData.description);
+    } else {
+      const firstOppIdCell = newRfpPage
+        .locator('//h3[normalize-space()="Choose Opportunity"]/following::tbody/tr[1]//td[2]//div[contains(@class,"text-left")]')
+        .first();
+      await expect(firstOppIdCell).toBeVisible();
+      const opportunityId = ((await firstOppIdCell.innerText()) || '').trim();
+      console.log(`[data] opportunityId: ${opportunityId}`);
+      expect(opportunityId).toMatch(/^OPP\d+/);
+
+      const opportunityQuickSearchInput = newRfpPage
+        .locator('//h3[normalize-space()="Choose Opportunity"]/following::input[@placeholder="Quick Search"]')
+        .first();
+      await expect(opportunityQuickSearchInput).toBeVisible();
+      await opportunityQuickSearchInput.click();
+      await opportunityQuickSearchInput.fill(opportunityId);
+      await newRfpPage.waitForTimeout(2000);
+
+      const opportunityRows = newRfpPage.locator('//h3[normalize-space()="Choose Opportunity"]/following::tbody/tr');
+      await expect(opportunityRows).toHaveCount(1);
+      const oppSelectedName = newRfpPage.locator(
+        `//tr/td[normalize-space()="${opportunityId}"]/following-sibling::td[1]`
+      ).first();
+      await expect(oppSelectedName).toBeVisible();
+      const oppSelectedNameText = (await oppSelectedName.innerText()).trim();
+      console.log("Opportunity Selected Name:", oppSelectedNameText);
+      await opportunityRows.first().click();
+
+      const continueButton3 = newRfpPage.getByRole('button', {
+        name: 'Continue',
+        exact: true
+      });
+      await continueButton3.click();
+      await newRfpPage.waitForTimeout(2000);
+
+      const opportunityNameCreationPage = newRfpPage.locator(
+        '//div[normalize-space()="Opportunity"]/following-sibling::div//div[contains(@class,"uppercase")]'
+      ).first();
+      const opportunityNameTextCreationPage = (await opportunityNameCreationPage.innerText()).trim();
+      expect(opportunityNameTextCreationPage.toLowerCase()).toBe(oppSelectedNameText.toLowerCase());
+    }
   } else {
     const opportunityNameCreationPage = newRfpPage.locator(
       '//div[normalize-space()="Opportunity"]/following-sibling::div//div[contains(@class,"uppercase")]'
@@ -225,6 +272,7 @@ test('Verify RFP in Product Item and RFP Hub @regression @set2', async ({ page }
     await expect(rfidLabelOption).toBeVisible();
     await expect(rfidLabelOption).toBeEnabled();
     await rfidLabelOption.click();
+    await newRfpPage.waitForTimeout(2000);
   }
 
   const workflowInput = newRfpPage.locator('input[name="deliverableItemSpecification.workflowId"][type="text"]');

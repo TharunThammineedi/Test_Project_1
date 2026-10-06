@@ -123,7 +123,7 @@ test('Link Remove Multiple Opportunities @regression @set2', async ({ page }) =>
   await expect(previewTab).toBeEnabled();
   await previewTab.click();
 
-  const linkedCustomer = page.locator('p').filter({ hasText: 'Charles Lecrec' }).first();
+  const linkedCustomer = page.locator('p').filter({ hasText: testData.customerName }).first();
   await expect(linkedCustomer).toBeVisible();
 
   const createContinueButton = page.getByRole('button', { name: 'Continue to Opportunity', exact: true }).first();

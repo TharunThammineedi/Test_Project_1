@@ -114,7 +114,7 @@ test('Create Product Item from Estimate @regression @set1 @mainflow', async ({ p
   const productItemCode = productItemText.split('-')[0].trim();
   console.log(`[data] productItemCode: ${productItemCode}`);
 
-  const estimateLinked = page.locator('//div[contains(text(),"Predecessor Item")]//following-sibling::div');
+  const estimateLinked = page.locator('//div[contains(text(),"Price Estimate")]//following-sibling::div');
   await expect(estimateLinked).toBeVisible();
   await estimateLinked.click();
   await page.waitForTimeout(2000);

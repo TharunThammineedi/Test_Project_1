@@ -1,9 +1,10 @@
-// Create Draft Estimate
+// Create Draft Estimate, then edit Specifications on that draft
 import testData from '../../test-data.json';
 import { test, expect } from '@playwright/test';
 const { prepareSession } = require('../../helpers/sessionData');
 
-test('Create Draft Estimate @regression @set1', async ({ page }) => {
+test('Create Draft Estimate and edit Specifications @regression @set1', async ({ page }) => {
+  test.setTimeout(720000);
   const session = prepareSession({ force: true });
   Object.assign(testData, session);
   console.log(`[data] Creation override → nameRequired: ${session.nameRequired}`);
@@ -97,7 +98,7 @@ const selectCustomerButton = page.getByRole('button', {
 
   const customerRadio = page.locator(
     'input[name="datagrid-radio-selection"][type="radio"]'
-  );
+  ).first();
 
   await customerRadio.check();
   await expect(customerRadio).toBeChecked();
@@ -111,17 +112,17 @@ const selectCustomerButton = page.getByRole('button', {
   await expect(continueButton1).toBeEnabled();
   await continueButton1.click();
 
-  // Choose Opportunity
-  const chooseOpportunityButton = page.getByRole('button', {
-    name: 'Choose Opportunity',
-    exact: true
-  });
-
+  // Choose Opportunity — click the <button> (wire:click), not getByRole on label alone
+  const chooseOpportunityButton = page
+    .locator('//button[.//p[normalize-space()="Choose Opportunity"]]')
+    .first();
+  await chooseOpportunityButton.scrollIntoViewIfNeeded();
+  await expect(chooseOpportunityButton).toBeVisible();
   await expect(chooseOpportunityButton).toBeEnabled();
   await chooseOpportunityButton.click();
 
   const opportunityQuickSearchInput = page.locator("xpath=//div[@id='project-picker-picker-opportunity-picker']//input[@placeholder='Quick Search']");
-
+  await expect(opportunityQuickSearchInput).toBeVisible({ timeout: 15000 });
   await opportunityQuickSearchInput.click();
 
   const opportunityCell = page.locator("xpath=//div[@id='project-picker-picker-opportunity-picker']//tbody//tr[1]//td[2]");
@@ -459,18 +460,80 @@ const chooseMaterialItemButton = page.getByRole('button', { name: 'Choose Materi
     );
     await expect(EstimateSuccessMessage).toBeVisible();
     await page.waitForTimeout(3000);
-    
+
     const estimateText = await page.locator('//div[@class="section"]//h1//span').innerText();
     const estimateNumber = estimateText.replace(/\s*-\s*Estimate\s*$/, '').trim();
-    console.log("Estimate Number:", estimateNumber);
-    
-     const draftIcon = page.locator(
-        '//span[normalize-space()="Draft"]/preceding-sibling::div/span/span[normalize-space()="01"]');
-      await expect(draftIcon).toBeVisible();
-      await expect(draftIcon).toHaveCount(1);
-    
-      const statusDraftDiv = page.locator('div').filter({ hasText: 'Draft' }).first();
-      await expect(statusDraftDiv).toBeVisible();
-  
+    console.log(`[data] Estimate Number: ${estimateNumber}`);
+
+    const draftIcon = page.locator(
+      '//span[normalize-space()="Draft"]/preceding-sibling::div/span/span[normalize-space()="01"]'
+    );
+    await expect(draftIcon).toBeVisible();
+    await expect(draftIcon).toHaveCount(1);
+
+    const statusDraftDiv = page.locator('div').filter({ hasText: 'Draft' }).first();
+    await expect(statusDraftDiv).toBeVisible();
+
+    // --- Edit Specifications on the draft just created ---
+    const specificationsTab = page.locator('//button[normalize-space()="Specifications"]');
+    await expect(specificationsTab).toBeVisible();
+    await expect(specificationsTab).toBeEnabled();
+    await specificationsTab.click();
+
+    const expandAllButton = page.getByRole('button', { name: 'Expand All', exact: true });
+    if (await expandAllButton.isVisible()) {
+      await expandAllButton.click();
+    }
+
+    const editButton = page.locator('//button[@data-cy="edit-button"]');
+    await expect(editButton).toBeVisible();
+    await expect(editButton).toBeEnabled();
+    await editButton.click();
+
+    const editPage = page.locator('//label[contains(normalize-space(), "Edit Estimate")]');
+    await expect(editPage).toBeVisible();
+    const estimateId = estimateNumber.replace(/^EST0*/, '');
+    await expect(editPage).toContainText(estimateId);
+
+    await expect(expandAllButton).toBeVisible();
+    await expandAllButton.click();
+
+    const editAppearanceColorInput = page.locator('input[name="deliverableItemSpecification.substrateColor"][type="text"]');
+    await expect(editAppearanceColorInput).toBeVisible();
+    await expect(editAppearanceColorInput).toBeEditable();
+    await editAppearanceColorInput.fill(testData.appearanceColorRequired);
+
+    const editDescriptionTextarea = page.locator('textarea[name="deliverableItemDTO.description"]');
+    await expect(editDescriptionTextarea).toBeVisible();
+    await expect(editDescriptionTextarea).toBeEditable();
+    await editDescriptionTextarea.fill(testData.descriptionRequired);
+    await expect(editDescriptionTextarea).toHaveValue(testData.descriptionRequired);
+
+    const saveButton = page.locator('//span[normalize-space()="Save Estimate"]');
+    await expect(saveButton).toBeVisible();
+    await expect(saveButton).toBeEnabled();
+    await saveButton.click();
+
+    const updateSuccessMessage = page.getByText('Estimate updated successfully.', { exact: true });
+    await expect(updateSuccessMessage).toBeVisible();
+
+    await page.waitForLoadState('domcontentloaded');
+    await page.reload();
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(2000);
+
+    const specificationsTabAfterReload = page.locator('//button[normalize-space()="Specifications"]');
+    await expect(specificationsTabAfterReload).toBeVisible();
+    await expect(specificationsTabAfterReload).toBeEnabled();
+    await specificationsTabAfterReload.click();
+    await page.waitForTimeout(2000);
+
+    const expandAllAfterReloadButton = page.getByRole('button', { name: 'Expand All', exact: true });
+    await expect(expandAllAfterReloadButton).toBeVisible();
+    await expect(expandAllAfterReloadButton).toBeEnabled();
+    await expandAllAfterReloadButton.click();
+
+    await expect(page.getByText(testData.descriptionRequired, { exact: true }).last()).toBeVisible();
+    await expect(page.getByText(testData.appearanceColorRequired, { exact: true }).last()).toBeVisible();
 });
  

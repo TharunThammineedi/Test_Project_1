@@ -267,14 +267,25 @@ test('Create RFP from Opportunity @regression @set1 @mainflow', async ({ page })
   await expect(chooseUnitTemplatesButton).toBeEnabled();
   await chooseUnitTemplatesButton.click();
 
+  const unitTemplatePickerHeading = rfpPage.locator('//h3[normalize-space()="Choose Unit-Template-Picker"]');
+  await expect(unitTemplatePickerHeading).toBeVisible();
+
   const unitTemplateQuickSearchInput = rfpPage.locator('input[placeholder="Quick Search"][data-flux-control]');
+  await expect(unitTemplateQuickSearchInput).toBeVisible();
+  await expect(unitTemplateQuickSearchInput).toBeEditable();
+  await rfpPage.waitForTimeout(2000);
+  await unitTemplateQuickSearchInput.click();
   await unitTemplateQuickSearchInput.fill(testData.unitTemplatePicker);
 
-  const utmDiv = rfpPage.locator('div').filter({ hasText: testData.unitTemplatePicker }).first();
-  await expect(utmDiv).toBeVisible();
-  await utmDiv.click();
+  const unitTemplateResult = rfpPage.locator('td').filter({ hasText: testData.unitTemplatePicker }).first();
+  await expect(unitTemplateResult).toBeVisible();
+  await expect(unitTemplateResult).toBeEnabled();
+  await unitTemplateResult.click();
 
-  const continueButton = rfpPage.locator('//h3[normalize-space()="Choose Unit-Template-Picker"]//ancestor::div[4]//span[normalize-space()="Continue"]');
+  const continueButton = rfpPage.locator(
+    '//h3[normalize-space()="Choose Unit-Template-Picker"]' +
+    '//ancestor::div[4]//span[normalize-space()="Continue"]'
+  );
   await continueButton.click();
 
   const createRfpButton = rfpPage.getByRole('button', {

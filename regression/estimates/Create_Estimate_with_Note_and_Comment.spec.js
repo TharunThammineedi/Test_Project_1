@@ -110,7 +110,7 @@ const selectCustomerButton = page.getByRole('button', {
 
   const customerRadio = page.locator(
     'input[name="datagrid-radio-selection"][type="radio"]'
-  );
+  ).first();
 
   await customerRadio.check();
   await expect(customerRadio).toBeChecked();
@@ -124,17 +124,17 @@ const selectCustomerButton = page.getByRole('button', {
   await expect(continueButton1).toBeEnabled();
   await continueButton1.click();
 
-  // Choose Opportunity
-  const chooseOpportunityButton = page.getByRole('button', {
-    name: 'Choose Opportunity',
-    exact: true
-  });
-
+  // Choose Opportunity — click the <button> (wire:click), not the inner <p>
+  const chooseOpportunityButton = page
+    .locator('//button[.//p[normalize-space()="Choose Opportunity"]]')
+    .first();
+  await chooseOpportunityButton.scrollIntoViewIfNeeded();
+  await expect(chooseOpportunityButton).toBeVisible();
   await expect(chooseOpportunityButton).toBeEnabled();
   await chooseOpportunityButton.click();
 
   const opportunityQuickSearchInput = page.locator("xpath=//div[@id='project-picker-picker-opportunity-picker']//input[@placeholder='Quick Search']");
-
+  await expect(opportunityQuickSearchInput).toBeVisible({ timeout: 15000 });
   await opportunityQuickSearchInput.click();
 
   const opportunityCell = page.locator("xpath=//div[@id='project-picker-picker-opportunity-picker']//tbody//tr[1]//td[2]");
@@ -337,27 +337,27 @@ const windDirectionButton = page.getByRole('button', {
 await expect(windDirectionButton).toBeEnabled();
 await windDirectionButton.click();
 
-// Choose Unit Templates
-const chooseUnitTemplatesButton = page.getByRole('button', {
-  name: 'Choose Unit Templates',
-  exact: true
-});
-
+// Choose Unit Templates — click the <button> (wire:click), not getByRole on label alone
+const chooseUnitTemplatesButton = page
+  .locator('//button[.//p[normalize-space()="Choose Unit Templates"]]')
+  .first();
+await chooseUnitTemplatesButton.scrollIntoViewIfNeeded();
+await expect(chooseUnitTemplatesButton).toBeVisible();
 await expect(chooseUnitTemplatesButton).toBeEnabled();
 await chooseUnitTemplatesButton.click();
 
-// Unit template quick search
-const unitTemplateQuickSearchInput = page.locator("xpath=//div[@id='unit-template-picker-picker-unit-template-picker-unit-template-component-pc-2']//input[@placeholder='Quick Search']");
-
-await unitTemplateQuickSearchInput.fill(
-  testData.unitTemplatePicker
-);
+const unitTemplateQuickSearchInput = page
+  .locator('//h3[contains(normalize-space(),"Unit-Template") or contains(normalize-space(),"Unit Template")]/following::input[@placeholder="Quick Search"]')
+  .first();
+await expect(unitTemplateQuickSearchInput).toBeVisible({ timeout: 15000 });
+await unitTemplateQuickSearchInput.click();
+await unitTemplateQuickSearchInput.fill(testData.unitTemplatePicker);
+await page.waitForTimeout(2000);
 
 const unitTemplateResult = page
-  .locator('div')
+  .locator('td')
   .filter({ hasText: testData.unitTemplatePicker })
   .first();
-
 await expect(unitTemplateResult).toBeVisible();
 await expect(unitTemplateResult).toBeEnabled();
 await unitTemplateResult.click();
@@ -367,7 +367,7 @@ const continueButton4 = page.locator(
   '//h3[normalize-space()="Choose Unit-Template-Picker"]' +
   '//ancestor::div[4]//span[normalize-space()="Continue"]'
 );
-
+await expect(continueButton4).toBeVisible();
 await continueButton4.click();
 
 const chooseMaterialItemButton = page.getByRole('button', { name: 'Choose Material Item', exact: true }).first();
@@ -485,6 +485,11 @@ const draftIcon = page.locator(
 
   const statusDraftDiv = page.locator('div').filter({ hasText: 'Needs Approval' }).first();
   await expect(statusDraftDiv).toBeVisible();
+
+  const detailsTabButton = page.locator('[data-cy="hub-tab-details"]');
+  await expect(detailsTabButton).toBeVisible();
+  await expect(detailsTabButton).toBeEnabled();
+  await detailsTabButton.click();
 
   await expect(page.locator('h3').filter({ hasText: 'Notes' }).first()).toBeVisible();
 

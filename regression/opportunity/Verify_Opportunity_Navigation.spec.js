@@ -63,20 +63,21 @@ test('Verify Opportunity Navigation @regression @set1', async ({ page }) => {
 
   await expect(rfpQueueLabel).toBeVisible();
   await expect(rfpQueueLabel).toBeEnabled();
-  await rfpQueueLabel.click();
 
   await page.waitForLoadState('domcontentloaded');
 
   const mineFilter = page.locator('//span[normalize-space()="Mine"]//following::button[1]');
   await expect(mineFilter).toBeVisible();
   await mineFilter.click();
+
   const firstRfpCell = page.locator('//tbody//tr[1]//td[2]');
   await expect(firstRfpCell).toBeVisible();
   const rfpNumber = (await firstRfpCell.innerText()).trim();
+  console.log(`[data] rfpNumber: ${rfpNumber}`);
   await firstRfpCell.click();
   await page.waitForTimeout(2000);
 
-  const proposalTitleSpan = page.locator('span').filter({ hasText: `${rfpNumber} - Request for Proposal` }).first();
+  const proposalTitleSpan = page.locator('div').filter({ hasText: `${rfpNumber} - Request for Proposal` }).first();
   await expect(proposalTitleSpan).toBeVisible();
   await expect(proposalTitleSpan).toBeEnabled();
   await proposalTitleSpan.click();

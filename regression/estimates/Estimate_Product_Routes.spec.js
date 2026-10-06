@@ -101,18 +101,18 @@ test('Link Estimate Product Routes @regression @set1', async ({ page }) => {
   const chooseProductRoutesHeading = page.locator('h3').filter({ hasText: 'Choose Product Routes' }).first();
   await expect(chooseProductRoutesHeading).toBeVisible();
 
-  const checkbox1 = page.locator('input[name="selectedIds"]').nth(0);
+  const checkbox1 = page.locator('input.form-checkbox[type="checkbox"][id^="checkbox.input"]').nth(0);
   await expect(checkbox1).toBeVisible();
-  await checkbox1.check();
+  await checkbox1.click();
   await expect(checkbox1).toBeChecked();
-  const expectedText1 = (await checkbox1.locator('xpath=following-sibling::label').innerText()).trim();
+  const expectedText1 = (await checkbox1.locator('xpath=ancestor::tr/td[2]').innerText()).trim().split(/\n/)[0].trim();
   console.log(`[data] checkbox1Text: ${expectedText1}`);
 
-  const checkbox2 = page.locator('input[name="selectedIds"]').nth(1);
+  const checkbox2 = page.locator('input.form-checkbox[type="checkbox"][id^="checkbox.input"]').nth(1);
   await expect(checkbox2).toBeVisible();
-  await checkbox2.check();
+  await checkbox2.click();
   await expect(checkbox2).toBeChecked();
-  const expectedText2 = (await checkbox2.locator('xpath=following-sibling::label').innerText()).trim();
+  const expectedText2 = (await checkbox2.locator('xpath=ancestor::tr/td[2]').innerText()).trim().split(/\n/)[0].trim();
   console.log(`[data] checkbox2Text: ${expectedText2}`);
 
   const productRoutesQuickSearchInput = page.locator('//h3[normalize-space()="Choose Product Routes"]//following::input[@placeholder="Quick Search"]');
@@ -120,10 +120,11 @@ test('Link Estimate Product Routes @regression @set1', async ({ page }) => {
   await expect(productRoutesQuickSearchInput).toBeEditable();
   await productRoutesQuickSearchInput.fill(expectedText2);
   await page.waitForTimeout(2000);
-  await expect(page.locator(`(//label[normalize-space()="${expectedText2}"])[2]`)).toBeVisible();
-  await expect(page.locator(`(//label[normalize-space()="${expectedText1}"])[2]`)).not.toBeVisible();
+  await expect(page.locator('//h3[normalize-space()="Choose Product Routes"]/following::tbody//td').filter({ hasText: expectedText2 }).first()).toBeVisible();
+  await expect(page.locator('//h3[normalize-space()="Choose Product Routes"]/following::tbody//td').filter({ hasText: expectedText1 })).toHaveCount(0);
   await productRoutesQuickSearchInput.clear();
 
+  await expect(page.getByRole('button', { name: 'Updating selection...' })).toHaveCount(0);
   const continueButton = page.getByRole('button', { name: 'Continue', exact: true });
   await expect(continueButton).toBeEnabled();
   await continueButton.click();

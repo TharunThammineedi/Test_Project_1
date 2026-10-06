@@ -65,17 +65,11 @@ test.describe('RFP Creation @regression', () => {
   const quickSearchInput = page.getByPlaceholder('Quick Search').first();
   await expect(quickSearchInput).toBeVisible();
   await expect(quickSearchInput).toBeEditable();
-  await quickSearchInput.fill(testData.quickSearch);
+  await quickSearchInput.fill(testData.customerCode);
 
-  const customerCell = page.locator('td').filter({ hasText: 'Charles Lecrec' }).first();
+  const customerCell = page.getByText(testData.customerName, { exact: true }).first();
   await expect(customerCell).toBeVisible();
-  await expect(customerCell).toBeEnabled();
   await customerCell.click();
-
-  const customerDiv = page.locator('div').filter({ hasText: 'Charles Lecrec' }).first();
-  await expect(customerDiv).toBeVisible();
-  await expect(customerDiv).toBeEnabled();
-  await customerDiv.click();
 
   const unlinkButton = page.getByRole('button', { name: 'Unlink', exact: true });
   await expect(unlinkButton).toBeVisible();
@@ -286,8 +280,8 @@ test.describe('RFP Creation @regression', () => {
   await expect(createRfpButton).toBeEnabled();
   await createRfpButton.click();
 
-  const rfpSuccessMessage = page.getByText('Request for Proposal created successfully.',{ exact: true });
-  await expect(rfpSuccessMessage).toBeVisible()
+  const rfpSuccessDiv = page.locator('div').filter({ hasText: 'Request for Proposal created successfully. Close' }).first();
+  await expect(rfpSuccessDiv).toBeVisible();
   await page.waitForTimeout(2000);
 
   const rfpHeading = page.getByRole('heading', {
@@ -428,17 +422,11 @@ test.describe('RFP Creation @regression', () => {
     const quickSearchInput = page.getByPlaceholder('Quick Search').first();
     await expect(quickSearchInput).toBeVisible();
     await expect(quickSearchInput).toBeEditable();
-    await quickSearchInput.fill(testData.quickSearch);
+    await quickSearchInput.fill(testData.customerCode);
 
-    const customerCell = page.locator('td').filter({ hasText: 'Charles Lecrec' }).first();
+    const customerCell = page.getByText(testData.customerName, { exact: true }).first();
     await expect(customerCell).toBeVisible();
-    await expect(customerCell).toBeEnabled();
     await customerCell.click();
-
-    const customerDiv = page.locator('div').filter({ hasText: 'Charles Lecrec' }).first();
-    await expect(customerDiv).toBeVisible();
-    await expect(customerDiv).toBeEnabled();
-    await customerDiv.click();
 
     const unlinkButton = page.getByRole('button', { name: 'Unlink', exact: true });
     await expect(unlinkButton).toBeVisible();

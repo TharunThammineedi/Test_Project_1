@@ -101,19 +101,38 @@ test('Link Estimate Product Routes @regression @set1', async ({ page }) => {
   const chooseProductRoutesHeading = page.locator('h3').filter({ hasText: 'Choose Product Routes' }).first();
   await expect(chooseProductRoutesHeading).toBeVisible();
 
-  const checkbox1 = page.locator('input.form-checkbox[type="checkbox"][id^="checkbox.input"]').nth(0);
+  // Rows with CODE | ROUTE text (e.g. FG0001 | Shrink Sleeve); checkbox is input#checkbox.input.*
+  const codedRows = page.locator(
+    "//h3[normalize-space()='Choose Product Routes']/following::input[contains(@class,'form-checkbox') and starts-with(@id,'checkbox.input')]/ancestor::tr[string-length(normalize-space(td[2])) > 0]"
+  );
+  await expect(codedRows.first()).toBeVisible();
+
+  const row1 = codedRows.nth(0);
+  const checkbox1 = row1.locator('input.form-checkbox[type="checkbox"][id^="checkbox.input"]');
   await expect(checkbox1).toBeVisible();
   await checkbox1.click();
   await expect(checkbox1).toBeChecked();
-  const expectedText1 = (await checkbox1.locator('xpath=ancestor::tr/td[2]').innerText()).trim().split(/\n/)[0].trim();
+  // Product class / route label lives in the bold td next to the checkbox (FG0001 | Shrink Sleeve)
+  const expectedText1 = (await row1.locator('td').filter({ hasText: '|' }).first().innerText())
+    .trim()
+    .split(/\n/)[0]
+    .split('|')[0]
+    .trim();
   console.log(`[data] checkbox1Text: ${expectedText1}`);
+  await expect(page.getByRole('button', { name: 'Updating selection...' })).toHaveCount(0);
 
-  const checkbox2 = page.locator('input.form-checkbox[type="checkbox"][id^="checkbox.input"]').nth(1);
+  const row2 = codedRows.nth(1);
+  const checkbox2 = row2.locator('input.form-checkbox[type="checkbox"][id^="checkbox.input"]');
   await expect(checkbox2).toBeVisible();
   await checkbox2.click();
   await expect(checkbox2).toBeChecked();
-  const expectedText2 = (await checkbox2.locator('xpath=ancestor::tr/td[2]').innerText()).trim().split(/\n/)[0].trim();
+  const expectedText2 = (await row2.locator('td').filter({ hasText: '|' }).first().innerText())
+    .trim()
+    .split(/\n/)[0]
+    .split('|')[0]
+    .trim();
   console.log(`[data] checkbox2Text: ${expectedText2}`);
+  await expect(page.getByRole('button', { name: 'Updating selection...' })).toHaveCount(0);
 
   const productRoutesQuickSearchInput = page.locator('//h3[normalize-space()="Choose Product Routes"]//following::input[@placeholder="Quick Search"]');
   await expect(productRoutesQuickSearchInput).toBeVisible();
@@ -125,7 +144,7 @@ test('Link Estimate Product Routes @regression @set1', async ({ page }) => {
   await productRoutesQuickSearchInput.clear();
 
   await expect(page.getByRole('button', { name: 'Updating selection...' })).toHaveCount(0);
-  const continueButton = page.getByRole('button', { name: 'Continue', exact: true });
+  const continueButton = page.locator('//h3[normalize-space()="Choose Product Routes"]/following::button[normalize-space()="Continue"]').first();
   await expect(continueButton).toBeEnabled();
   await continueButton.click();
 

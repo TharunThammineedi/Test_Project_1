@@ -333,18 +333,17 @@ const chooseUnitTemplatesButton = page.getByRole('button', {
 await expect(chooseUnitTemplatesButton).toBeEnabled();
 await chooseUnitTemplatesButton.click();
 
-// Unit template quick search
-const unitTemplateQuickSearchInput = page.locator("xpath=//div[@id='unit-template-picker-picker-unit-template-picker-unit-template-component-pc-2']//input[@placeholder='Quick Search']");
+const unitTemplatePickerHeading = page.locator('//h3[normalize-space()="Choose Unit-Template-Picker"]');
+await expect(unitTemplatePickerHeading).toBeVisible();
 
-await unitTemplateQuickSearchInput.fill(
-  testData.unitTemplatePicker
-);
+const unitTemplateQuickSearchInput = page.locator('input[placeholder="Quick Search"][data-flux-control]');
+await expect(unitTemplateQuickSearchInput).toBeVisible();
+await expect(unitTemplateQuickSearchInput).toBeEditable();
+await page.waitForTimeout(2000);
+await unitTemplateQuickSearchInput.click();
+await unitTemplateQuickSearchInput.fill(testData.unitTemplatePicker);
 
-const unitTemplateResult = page
-  .locator('div')
-  .filter({ hasText: testData.unitTemplatePicker })
-  .first();
-
+const unitTemplateResult = page.locator('td').filter({ hasText: testData.unitTemplatePicker }).first();
 await expect(unitTemplateResult).toBeVisible();
 await expect(unitTemplateResult).toBeEnabled();
 await unitTemplateResult.click();
@@ -483,10 +482,10 @@ const draftIcon = page.locator(
 
   const anxilaryitemquickSearchInput = page.locator("xpath=//input[@placeholder='Quick Search']").first();
   await expect(anxilaryitemquickSearchInput).toBeVisible();
-  await anxilaryitemquickSearchInput.fill("Item change charge");
+  await anxilaryitemquickSearchInput.fill("Item Change Charge");
   await page.waitForTimeout(2000);
  
-  const itemChangeChargeCheckbox = page.locator('//label[normalize-space()="Item change charge"]/input');
+  const itemChangeChargeCheckbox = page.locator('//label[normalize-space()="Item Change Charge"]/input');
   await itemChangeChargeCheckbox.check();
   await expect(itemChangeChargeCheckbox).toBeChecked();
  
@@ -494,10 +493,6 @@ const draftIcon = page.locator(
   await page.waitForTimeout(2000);
   await anxilaryitemquickSearchInput.fill("Programing Fee");
   await page.waitForTimeout(2000);
-
-  const programingFeeLabel = page.locator('label').filter({ hasText: /^Programing Fee$/ }).first();
-  await expect(programingFeeLabel).toBeVisible();
-  await expect(programingFeeLabel).toBeEnabled();
  
   const programingFeeCheckbox = page.locator('//label[normalize-space()="Programing Fee"]/input');
   await programingFeeCheckbox.check();
@@ -508,7 +503,7 @@ const draftIcon = page.locator(
   await expect(continueButton_ancillary).toBeEnabled();
   await continueButton_ancillary.click();
 
-  const itemChangeChargeSpan = page.locator('span').filter({ hasText: '16 - Item change charge' }).first();
+  const itemChangeChargeSpan = page.locator('span').filter({ hasText: '16 - Item Change Charge' }).first();
   await expect(itemChangeChargeSpan).toBeVisible();
   await expect(itemChangeChargeSpan).toBeEnabled();
 
@@ -558,7 +553,7 @@ const draftIcon = page.locator(
   await expect(programingFeeDiv).toBeVisible();
   await expect(programingFeeDiv).toBeEnabled();
  
-  const itemChangeChargeTooltipSpan = page.locator('span').filter({ hasText: 'Item change charge' }).first();
+  const itemChangeChargeTooltipSpan = page.locator('span').filter({ hasText: 'Item Change Charge' }).first();
   await expect(itemChangeChargeTooltipSpan).toBeVisible();
   await expect(itemChangeChargeTooltipSpan).toBeEnabled();
 
@@ -566,18 +561,22 @@ const draftIcon = page.locator(
   const linkAncillaryItemQuickSearchInput = page.locator('input[placeholder="Quick Search"]').nth(1);
   await expect(linkAncillaryItemQuickSearchInput).toBeVisible();
   await expect(linkAncillaryItemQuickSearchInput).toBeEditable();
-  await linkAncillaryItemQuickSearchInput.fill("Item change charge");
+  await linkAncillaryItemQuickSearchInput.fill("Item Change Charge");
   await page.waitForTimeout(2000);
+
+  const itemChangeCharge_afterquickSearch = page.locator('//span[normalize-space()="Item Change Charge"]').first();
+  await expect(itemChangeCharge_afterquickSearch).toBeVisible();
 
   const programingFeeDiv_afterquickSearch = page.locator('//span[normalize-space()="Programing Fee"]');
   await expect(programingFeeDiv_afterquickSearch).not.toBeVisible();
 
   await linkAncillaryItemQuickSearchInput.clear();
+  await page.waitForTimeout(2000);
 
   const programmingFeeDiv_afterClearQuickSearch = page.locator('//span[normalize-space()="Programing Fee"]').first();
   await expect(programmingFeeDiv_afterClearQuickSearch).toBeVisible();
 
-  const itemChangeChargeTooltipSpan_afterClearQuickSearch = page.locator('//span[normalize-space()="Item change charge"]').first();
+  const itemChangeChargeTooltipSpan_afterClearQuickSearch = page.locator('//span[normalize-space()="Item Change Charge"]').first();
   await expect(itemChangeChargeTooltipSpan_afterClearQuickSearch).toBeVisible();
   
 const editbuttonAncillaryItem = page.locator('button[x-tooltip="Edit"]').nth(5);
@@ -599,7 +598,7 @@ await saveButtonAncillaruItemAfterRemove.click();
 const ancillaryItemsUpdatedMsg_afterRemove = page.locator('p').filter({ hasText: 'Ancillary Items Updated Successfully' }).first();
 await expect(ancillaryItemsUpdatedMsg_afterRemove).toBeVisible();
 
-const itemChangeChargeTooltipSpan_afterRemove = page.locator('//span[normalize-space()="Item change charge"]').first();
+const itemChangeChargeTooltipSpan_afterRemove = page.locator('//span[normalize-space()="Item Change Charge"]').first();
 await expect(itemChangeChargeTooltipSpan_afterRemove).not.toBeVisible();
 
 const programmingFeeDiv_afterRemove = page.locator('//span[normalize-space()="Programing Fee"]').first();

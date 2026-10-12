@@ -22,5 +22,8 @@
   "file": "C:\\fakepath\\Screenshot 2026-08-06 175205.png",
   "itemDefaultCost": "20",
   "itemDefaultPrice": "30",
-  "awaitPageLocatorQlEditorFill": "Test123"
+  "awaitPageLocatorQlEditorFill": "Test123",
+  "userPicker": "Ranga Sharan Rohith",
+  "userPicker_2": "Jay Allyson",
+  "pushbackNoteSecond": "Prepress missing information note"
 }

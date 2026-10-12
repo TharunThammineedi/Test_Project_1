@@ -1,9 +1,9 @@
-// Create Draft Estimate, then edit Specifications on that draft
+// Create Draft Estimate + Edit Specifications (merged; do not re-split)
 import testData from '../../test-data.json';
 import { test, expect } from '@playwright/test';
 const { prepareSession } = require('../../helpers/sessionData');
 
-test('Create Draft Estimate and edit Specifications @regression @set1', async ({ page }) => {
+test('Create Draft Estimate and Edit Specifications @regression @set1', async ({ page }) => {
   test.setTimeout(720000);
   const session = prepareSession({ force: true });
   Object.assign(testData, session);
@@ -334,18 +334,17 @@ const chooseUnitTemplatesButton = page.getByRole('button', {
 await expect(chooseUnitTemplatesButton).toBeEnabled();
 await chooseUnitTemplatesButton.click();
 
-// Unit template quick search
-const unitTemplateQuickSearchInput = page.locator("xpath=//div[@id='unit-template-picker-picker-unit-template-picker-unit-template-component-pc-2']//input[@placeholder='Quick Search']");
+const unitTemplatePickerHeading = page.locator('//h3[normalize-space()="Choose Unit-Template-Picker"]');
+await expect(unitTemplatePickerHeading).toBeVisible();
 
-await unitTemplateQuickSearchInput.fill(
-  testData.unitTemplatePicker
-);
+const unitTemplateQuickSearchInput = page.locator('input[placeholder="Quick Search"][data-flux-control]');
+await expect(unitTemplateQuickSearchInput).toBeVisible();
+await expect(unitTemplateQuickSearchInput).toBeEditable();
+await page.waitForTimeout(2000);
+await unitTemplateQuickSearchInput.click();
+await unitTemplateQuickSearchInput.fill(testData.unitTemplatePicker);
 
-const unitTemplateResult = page
-  .locator('div')
-  .filter({ hasText: testData.unitTemplatePicker })
-  .first();
-
+const unitTemplateResult = page.locator('td').filter({ hasText: testData.unitTemplatePicker }).first();
 await expect(unitTemplateResult).toBeVisible();
 await expect(unitTemplateResult).toBeEnabled();
 await unitTemplateResult.click();

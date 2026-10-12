@@ -333,18 +333,17 @@ const chooseUnitTemplatesButton = page.getByRole('button', {
 await expect(chooseUnitTemplatesButton).toBeEnabled();
 await chooseUnitTemplatesButton.click();
 
-// Unit template quick search
-const unitTemplateQuickSearchInput = page.locator("xpath=//div[@id='unit-template-picker-picker-unit-template-picker-unit-template-component-pc-2']//input[@placeholder='Quick Search']");
+const unitTemplatePickerHeading = page.locator('//h3[normalize-space()="Choose Unit-Template-Picker"]');
+await expect(unitTemplatePickerHeading).toBeVisible();
 
-await unitTemplateQuickSearchInput.fill(
-  testData.unitTemplatePicker
-);
+const unitTemplateQuickSearchInput = page.locator('input[placeholder="Quick Search"][data-flux-control]');
+await expect(unitTemplateQuickSearchInput).toBeVisible();
+await expect(unitTemplateQuickSearchInput).toBeEditable();
+await page.waitForTimeout(2000);
+await unitTemplateQuickSearchInput.click();
+await unitTemplateQuickSearchInput.fill(testData.unitTemplatePicker);
 
-const unitTemplateResult = page
-  .locator('div')
-  .filter({ hasText: testData.unitTemplatePicker })
-  .first();
-
+const unitTemplateResult = page.locator('td').filter({ hasText: testData.unitTemplatePicker }).first();
 await expect(unitTemplateResult).toBeVisible();
 await expect(unitTemplateResult).toBeEnabled();
 await unitTemplateResult.click();
@@ -479,95 +478,102 @@ const draftIcon = page.locator(
   await expect(editBillingButton).toBeVisible();
   await expect(editBillingButton).toBeEnabled();
   await editBillingButton.click();
- 
+
   const selectAddressButton = page.getByRole('button', { name: 'Select Address', exact: true });
+  const unlinkButtonBillTo = page.getByRole('button', { name: 'Unlink', exact: true });
+  const existingBillToChoose = page.locator('span[x-tooltip="Choose"]').first();
+
+  if (!(await selectAddressButton.isVisible())) {
+    await expect(existingBillToChoose).toBeVisible();
+    await existingBillToChoose.click();
+    await expect(unlinkButtonBillTo).toBeVisible();
+    await expect(unlinkButtonBillTo).toBeEnabled();
+    await unlinkButtonBillTo.click();
+    await expect(selectAddressButton).toBeVisible();
+  }
+
   await expect(selectAddressButton).toBeEnabled();
   await selectAddressButton.click();
 
-  const chooseAddressButton = page.locator('//h3[normalize-space()="Choose Address"]');
-  await expect(chooseAddressButton).toBeVisible();
+  const firstRadio = page.locator('input[type="radio"][name="selectedId"]').first();
+  await expect(firstRadio).toBeVisible();
+  await firstRadio.check();
 
- 
-  const lecresAddressDiv = page.locator('span').filter({ hasText: 'Lecres_Address_2' }).first();
-  await expect(lecresAddressDiv).toBeVisible();
-  await expect(lecresAddressDiv).toBeEnabled();
-  await lecresAddressDiv.click();
- 
-  const continueAddressButton = page.getByRole('button', { name: 'Continue', exact: true });
-  await expect(continueAddressButton).toBeEnabled();
-  await continueAddressButton.click();
+  const continueDialogButton = page.locator('//div[@label="Choose Address"]//..//button[normalize-space()="Continue"]').first();
+  await expect(continueDialogButton).toBeEnabled();
+  await continueDialogButton.click();
 
-  const saveBillingButton = page.locator('button[x-tooltip="Save"][wire\\:click="save"]');
+  const saveBillingButton = page.locator('button[x-tooltip="Save"][wire\\:click="save"]').first();
   await expect(saveBillingButton).toBeEnabled();
   await saveBillingButton.scrollIntoViewIfNeeded();
   await saveBillingButton.click({ force: true });
- 
+
   const billingAddressSuccess = page.locator('p').filter({ hasText: 'Billing address updated successfully' }).first();
   await expect(billingAddressSuccess).toBeVisible();
- 
-  await (editBillingButton).click();
-  const editBillTo_button = page.locator('span[class="order-1"]').first();
-  await expect(editBillTo_button).toBeVisible();
-  await editBillTo_button.click();
-  await expect(chooseAddressButton).toBeVisible();
-const unlinkButton_billTo = page.locator('button[wire\\:click="unlink"]');
-await expect(unlinkButton_billTo).toBeVisible();
-await expect(unlinkButton_billTo).toBeEnabled();
-await unlinkButton_billTo.click();
 
-  const selectAddressButton_billTo = page.getByRole('button', { name: 'Select Address', exact: true });
-  await expect(selectAddressButton).toBeEnabled();
-  await selectAddressButton_billTo.click();
+  const editshippingButton = page.locator('(//span[normalize-space()="Ship To"]//following::button[@x-tooltip="Edit"])[1]');
+  await expect(editshippingButton).toBeVisible();
+  await expect(editshippingButton).toBeEnabled();
+  await editshippingButton.click();
 
-  const chooseAddressButton_billTo = page.locator('//h3[normalize-space()="Choose Address"]');
-  await expect(chooseAddressButton_billTo).toBeVisible();
+  const selectAddressButtonShipTo = page.getByRole('button', { name: 'Select Address', exact: true });
+  const unlinkButtonShipTo = page.getByRole('button', { name: 'Unlink', exact: true });
+  const existingShipToChoose = page.locator('span[x-tooltip="Choose"]').first();
 
-  const lecresAddressDiv_billTo = page.locator('span').filter({ hasText: 'Address_1' }).first();
-  await expect(lecresAddressDiv_billTo).toBeVisible();
-  await expect(lecresAddressDiv_billTo).toBeEnabled();
-  await lecresAddressDiv_billTo.click();
- 
-  const continueAddressButton_billTo = page.getByRole('button', { name: 'Continue', exact: true });
-  await expect(continueAddressButton_billTo).toBeEnabled();
-  await continueAddressButton_billTo.click();
+  if (!(await selectAddressButtonShipTo.isVisible())) {
+    await expect(existingShipToChoose).toBeVisible();
+    await existingShipToChoose.click();
+    await expect(unlinkButtonShipTo).toBeVisible();
+    await expect(unlinkButtonShipTo).toBeEnabled();
+    await unlinkButtonShipTo.click();
+    await expect(selectAddressButtonShipTo).toBeVisible();
+  }
 
-  const saveBillingButton_billTo = page.locator('button[x-tooltip="Save"][wire\\:click="save"]');
-  await expect(saveBillingButton_billTo).toBeEnabled();
-  await saveBillingButton_billTo.scrollIntoViewIfNeeded();
-  await saveBillingButton_billTo.click({ force: true });
- 
-  const billingAddressSuccess_billTo = page.locator('p').filter({ hasText: 'Billing address updated successfully' }).first();
-  await expect(billingAddressSuccess_billTo).toBeVisible();
+  await expect(selectAddressButtonShipTo).toBeEnabled();
+  await selectAddressButtonShipTo.click();
 
- const editshippingButton = page.locator('(//span[normalize-space()="Ship To"]//following::button[@x-tooltip="Edit"])[1]');
- await expect(editshippingButton).toBeVisible();
- await editshippingButton.click();
+  const lastRadioShipTo = page.locator('input[type="radio"][name="selectedId"]').last();
+  await expect(lastRadioShipTo).toBeVisible();
+  await lastRadioShipTo.check();
 
- const selectAddressRadioButton = page.locator('input[name="addressType"]').first();
- await expect(selectAddressRadioButton).toBeVisible();
- await selectAddressRadioButton.click();
+  const continueDialogButtonShipTo = page.locator('//div[@label="Choose Address"]//..//button[normalize-space()="Continue"]').last();
+  await expect(continueDialogButtonShipTo).toBeEnabled();
+  await continueDialogButtonShipTo.click();
 
- const selectAddressButton_shipping = page.locator('//input[@name="addressType"]//following::button//div[contains(@class,"text-right text-gray-900")]');
- await expect(selectAddressButton_shipping).toBeVisible();
- await selectAddressButton_shipping.click();
-
-  const chooseAddressButton_shipping = page.locator('//h3[normalize-space()="Choose Address"]').last();
-  await expect(chooseAddressButton_shipping).toBeVisible();
-
-  const lecresAddressDiv_shipping = page.locator('span').filter({ hasText: 'Lecres_Address_2' }).last();
-  await expect(lecresAddressDiv_shipping).toBeVisible();
-  await expect(lecresAddressDiv_shipping).toBeEnabled();
-  await lecresAddressDiv_shipping.click();
-
-  const continueAddressButton_shipping = page.getByRole('button', { name: 'Continue', exact: true });
-  await expect(continueAddressButton_shipping).toBeEnabled();
-  await continueAddressButton_shipping.click();
-
-  const saveBillingButton_shipping = page.locator('button[x-tooltip="Save"][wire\\:click="save"]').last();
-  await expect(saveBillingButton_shipping).toBeEnabled();
-  await saveBillingButton_shipping.scrollIntoViewIfNeeded();
-  await saveBillingButton_shipping.click({ force: true });
+  const saveShipToAddressButton = page.locator('button[x-tooltip="Save"][wire\\:click="save"]').last();
+  await expect(saveShipToAddressButton).toBeEnabled();
+  await saveShipToAddressButton.scrollIntoViewIfNeeded();
+  await saveShipToAddressButton.click({ force: true });
 
   const shippingAddressSuccess = page.locator('p').filter({ hasText: 'Shipping address updated successfully' }).first();
   await expect(shippingAddressSuccess).toBeVisible();
+
+  // Read address from the visible Bill To / Ship To cards (not following::text-right /
+  // following::p — those hit hidden Choose Address / Reset Filters leftovers).
+  const billToCard = page.getByRole('heading', { name: 'Bill To', exact: true })
+    .locator('xpath=ancestor::div[contains(., "Customer Address")][1]');
+  const shipToCard = page.getByRole('heading', { name: 'Ship To', exact: true })
+    .locator('xpath=ancestor::div[contains(., "Customer Address")][1]');
+  await expect(billToCard).toBeVisible();
+  const billToCardText = (await billToCard.innerText()).trim();
+  const billToAddress = billToCardText
+    .split('\n')
+    .map((line) => line.replace(/^Customer Address\s*/i, '').trim())
+    .find((line) => line && !/^(Bill To|Attention|No Entries)$/i.test(line)) || '';
+  console.log(`[data] billToAddress: ${billToAddress}`);
+  expect(billToAddress.length).toBeGreaterThan(0);
+
+  await expect(editshippingButton).toBeEnabled();
+  await editshippingButton.click();
+
+  const sameAsBillToButton = page.locator('//label[normalize-space()="Same as Bill To"]/preceding-sibling::input');
+  await expect(sameAsBillToButton).toBeVisible();
+  await expect(sameAsBillToButton).toBeEnabled();
+  await sameAsBillToButton.check();
+  await expect(saveShipToAddressButton).toBeEnabled();
+  await saveShipToAddressButton.click();
+
+  await expect(shipToCard).toBeVisible();
+  await expect(shipToCard).toContainText(billToAddress);
+  console.log(`[data] shipToAddress matches billTo: ${billToAddress}`);
 });

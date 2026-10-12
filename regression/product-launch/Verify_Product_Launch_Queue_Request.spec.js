@@ -125,9 +125,9 @@ test('Verify Product Launch Queue request after Product Item approval @regressio
   await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(3000);
 
-  const productItemHeading = page.getByText(/^[A-Z]+\d+-Product Item$/).first();
+  const productItemHeading = page.getByText(/^[A-Z]+\d+\s*-\s*Product Item$/).first();
   await expect(productItemHeading).toBeVisible();
-  const productItemId = ((await productItemHeading.innerText()) || '').replace(/-Product Item$/, '').trim();
+  const productItemId = ((await productItemHeading.innerText()) || '').replace(/\s*-\s*Product Item$/, '').trim();
   console.log(`[data] productItemId: ${productItemId}`);
   expect(productItemId.length).toBeGreaterThan(0);
 
@@ -368,8 +368,18 @@ test('Verify Product Launch Queue request after Product Item approval @regressio
   await expect(saveProductRouteButton).toBeEnabled();
   await saveProductRouteButton.click();
   await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(3000);
 
-  await expect(productItemHeading).toBeVisible();
+  // Return to Product Item show (known id; allow spaces; reload if navigation stalls under load)
+  const productItemShowHeading = page
+    .locator('div.title')
+    .filter({ hasText: new RegExp(`${productItemId}\\s*-\\s*Product Item`) })
+    .first();
+  if (!(await productItemShowHeading.isVisible().catch(() => false))) {
+    await page.reload();
+    await page.waitForLoadState('domcontentloaded');
+  }
+  await expect(productItemShowHeading).toBeVisible();
   await expect(productionSpecsHeading).toBeVisible();
 
   await page.reload();

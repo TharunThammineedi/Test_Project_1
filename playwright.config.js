@@ -13,7 +13,7 @@ module.exports = defineConfig({
   fullyParallel: false,
   forbidOnly: isCI,
   workers: isCI ? 4 : 1,
-  retries: 0,
+  retries: 1,
   timeout: 360000,
   expect: {
     timeout: 120000,

@@ -96,6 +96,7 @@ test('Assign User in RFP @regression @set1', async ({ page }) => {
   await expect(feetOption).toBeEnabled();
   await feetOption.click();
 
+  await page.waitForTimeout(2000);
   const quantityBreak1Input = page.locator('input[name="deliverableItemDTO.extension.quantityBreak1"][type="text"]');
   await expect(quantityBreak1Input).toBeVisible();
   await expect(quantityBreak1Input).toBeEditable();
@@ -269,7 +270,7 @@ test('Assign User in RFP @regression @set1', async ({ page }) => {
   await expect(createRfpButton).toBeEnabled();
   await createRfpButton.click();
 
-  const rfpSuccessDiv = page.locator('div').filter({ hasText: 'Request for Proposal created successfully. Close' }).first();
+  const rfpSuccessDiv = page.locator('div').filter({ hasText: 'Request for Proposal created successfully.' }).first();
   await expect(rfpSuccessDiv).toBeVisible();
 
   const statusDraftDiv = page.locator('div').filter({ hasText: 'Status Requested' }).first();
@@ -296,7 +297,7 @@ test('Assign User in RFP @regression @set1', async ({ page }) => {
   const descriptionDiv = page.locator(`//div[@id="info-estimate"]//div[contains(normalize-space(),"${testData.estimate}")]`).first();
   await expect(descriptionDiv).toBeVisible();
 
-  const selectUserButton = page.locator('xpath=(//button[normalize-space()="Select User"])[1]')
+  const selectUserButton = page.locator('xpath=(//button[normalize-space()="Assign Estimator"])[1]')
   await expect(selectUserButton).toBeVisible();
   await selectUserButton.click();
 

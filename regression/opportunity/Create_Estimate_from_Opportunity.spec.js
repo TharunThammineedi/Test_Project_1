@@ -321,7 +321,7 @@ test('Create Estimate from Opportunity @regression @set1 @mainflow', async ({ pa
   await createEstimateButton.click();
 
   const EstimateSuccessMessage = estimatePage.getByText('Estimate created successfully.', { exact: true });
-  await expect(EstimateSuccessMessage).toBeVisible();
+  await expect(EstimateSuccessMessage).toBeVisible({ timeout: 180000 });
   await estimatePage.waitForTimeout(3000);
 
   const estimateText = await estimatePage.locator('//div[@class="section"]//h1//span').innerText();

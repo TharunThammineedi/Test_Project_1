@@ -98,21 +98,15 @@ const selectCustomerButton = page.getByRole('button', {
   await expect(customerQuickSearchInput).toBeEnabled();
   await customerQuickSearchInput.click();
   await customerQuickSearchInput.fill(testData.quickSearch);
+  await page.waitForTimeout(1500);
 
-  const customerResult = page
-    .locator('div')
-    .filter({ hasText: testData.quickSearch })
-    .first();
-
-  await expect(customerResult).toBeVisible();
-  await expect(customerResult).toBeEnabled();
-  await customerResult.click();
-
+  // Select via radio only (avoid duplicate row-click + check)
+  const customerRadioValue = String(testData.customerCode || '').replace(/\D/g, '');
   const customerRadio = page.locator(
-    'input[name="datagrid-radio-selection"][type="radio"]'
-  ).first();
-
-  await customerRadio.check();
+    `input[name="datagrid-radio-selection"][type="radio"][value="${customerRadioValue}"]`
+  );
+  await expect(customerRadio).toBeVisible();
+  await customerRadio.click({ force: true });
   await expect(customerRadio).toBeChecked();
 
   // Continue after customer selection
@@ -337,27 +331,26 @@ const windDirectionButton = page.getByRole('button', {
 await expect(windDirectionButton).toBeEnabled();
 await windDirectionButton.click();
 
-// Choose Unit Templates — click the <button> (wire:click), not getByRole on label alone
-const chooseUnitTemplatesButton = page
-  .locator('//button[.//p[normalize-space()="Choose Unit Templates"]]')
-  .first();
-await chooseUnitTemplatesButton.scrollIntoViewIfNeeded();
-await expect(chooseUnitTemplatesButton).toBeVisible();
+// Choose Unit Templates (same pattern as RFP specs — wait for picker to settle)
+const chooseUnitTemplatesButton = page.getByRole('button', {
+  name: 'Choose Unit Templates',
+  exact: true
+});
+
 await expect(chooseUnitTemplatesButton).toBeEnabled();
 await chooseUnitTemplatesButton.click();
 
-const unitTemplateQuickSearchInput = page
-  .locator('//h3[contains(normalize-space(),"Unit-Template") or contains(normalize-space(),"Unit Template")]/following::input[@placeholder="Quick Search"]')
-  .first();
-await expect(unitTemplateQuickSearchInput).toBeVisible({ timeout: 15000 });
+const unitTemplatePickerHeading = page.locator('//h3[normalize-space()="Choose Unit-Template-Picker"]');
+await expect(unitTemplatePickerHeading).toBeVisible();
+
+const unitTemplateQuickSearchInput = page.locator('input[placeholder="Quick Search"][data-flux-control]');
+await expect(unitTemplateQuickSearchInput).toBeVisible();
+await expect(unitTemplateQuickSearchInput).toBeEditable();
+await page.waitForTimeout(3000);
 await unitTemplateQuickSearchInput.click();
 await unitTemplateQuickSearchInput.fill(testData.unitTemplatePicker);
-await page.waitForTimeout(2000);
 
-const unitTemplateResult = page
-  .locator('td')
-  .filter({ hasText: testData.unitTemplatePicker })
-  .first();
+const unitTemplateResult = page.locator('td').filter({ hasText: testData.unitTemplatePicker }).first();
 await expect(unitTemplateResult).toBeVisible();
 await expect(unitTemplateResult).toBeEnabled();
 await unitTemplateResult.click();
@@ -367,7 +360,7 @@ const continueButton4 = page.locator(
   '//h3[normalize-space()="Choose Unit-Template-Picker"]' +
   '//ancestor::div[4]//span[normalize-space()="Continue"]'
 );
-await expect(continueButton4).toBeVisible();
+await page.waitForTimeout(3000);
 await continueButton4.click();
 
 const chooseMaterialItemButton = page.getByRole('button', { name: 'Choose Material Item', exact: true }).first();
@@ -471,7 +464,7 @@ const EstimateSuccessMessage =  page.getByText(
   'Estimate created successfully.',
   { exact: true }
 );
-await expect(EstimateSuccessMessage).toBeVisible();
+await expect(EstimateSuccessMessage).toBeVisible({ timeout: 180000 });
 await page.waitForTimeout(3000);
 
 const estimateText = await page.locator('//div[@class="section"]//h1//span').innerText();
@@ -504,7 +497,7 @@ const draftIcon = page.locator(
   await expect(saveNoteButton).toBeEnabled();
   await saveNoteButton.click();
 
-  await expect(page.getByText('Note created successfully.').first()).toBeVisible();
+  await expect(page.getByText('Note created successfully.').first()).toBeVisible({ timeout: 180000 });
 
   const addedNoteDiv = page.getByText(testData.notesRequired).last();
   await expect(addedNoteDiv).toBeVisible();

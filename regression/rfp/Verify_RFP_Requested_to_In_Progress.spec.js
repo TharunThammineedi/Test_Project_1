@@ -136,7 +136,7 @@ test('Verify RFP Requested to In Progress @regression @set1', async ({ page }) =
   const convertToEstimateButtonDisabled = page.locator('button').filter({ hasText: 'Convert to Estimate' });
   await expect(convertToEstimateButtonDisabled).not.toBeEnabled();
 
-  const selectUserButton = page.locator('xpath=(//button[normalize-space()="Select User"])[1]');
+  const selectUserButton = page.locator('xpath=(//button[normalize-space()="Assign Estimator"])[1]');
   await expect(selectUserButton).toBeVisible();
   await selectUserButton.click();
 

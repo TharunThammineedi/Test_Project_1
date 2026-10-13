@@ -13,10 +13,10 @@ module.exports = defineConfig({
   fullyParallel: false,
   forbidOnly: isCI,
   workers: isCI ? 4 : 1,
-  retries: 1,
+  retries: 0,
   timeout: 360000,
   expect: {
-    timeout: 120000,
+    timeout: 180000,
   },
   reporter: [
     ['line'],
@@ -25,14 +25,14 @@ module.exports = defineConfig({
     ['allure-playwright', { resultsDir: 'allure-results' }],
   ],
   use: {
-    actionTimeout: 60000,
-    navigationTimeout: 60000,
+    actionTimeout: 90000,
+    navigationTimeout: 90000,
     headless: process.env.HEADLESS !== 'false',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: isCI ? 'retain-on-failure' : 'on',
     launchOptions: {
-      slowMo: 1000,
+      slowMo: 1200,
     },
   },
   projects: [

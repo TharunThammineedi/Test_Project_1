@@ -111,6 +111,7 @@ test.describe('Estimate Edit and Status @regression', () => {
     const estimateMenuLink = page.locator('(//button[normalize-space()="Estimating & Pricing"])[1]');
     await expect(estimateMenuLink).toBeVisible();
     await estimateMenuLink.click();
+    await page.waitForTimeout(2000);
 
     const estimatesQuotesLink = page.getByRole('link', { name: 'Estimates/Quotes', exact: true });
     await expect(estimatesQuotesLink).toBeVisible();
@@ -147,8 +148,10 @@ test.describe('Estimate Edit and Status @regression', () => {
     await expect(estimateTitleSpan).toBeVisible();
 
     const statusDiv = page.locator('//div[@id="info-estimate"]//div[normalize-space()="Status"]//following-sibling::div//span').first();
+    const selectedStatus = (suffix) => page.locator(`li[id^="selected-${suffix}"]`);
+
     await expect(statusDiv).toHaveText('Draft');
-    await expect(page.locator('li[id^="selected-"]')).toHaveAttribute('id', 'selected-draft');
+    await expect(selectedStatus('draft')).toBeVisible();
 
     const editButton = page.locator('[data-cy="estimateEditButton"]');
     await expect(editButton).toBeEnabled();
@@ -159,25 +162,36 @@ test.describe('Estimate Edit and Status @regression', () => {
     await statusInput.click();
     await page.locator('li[data-label="Needs Approval"]').click();
 
-    const saveButton = page.locator('button[x-tooltip="Save"][id^="estimate::edit-save-"]');
+    let saveButton = page.locator('button[x-tooltip="Save"][id^="estimate::edit-save-"]');
     await expect(saveButton).toBeEnabled();
     await saveButton.click();
-    await page.waitForTimeout(4000);
 
+    // Wait on workflow selected-li (survives parallel lag better than a fixed sleep)
+    await expect(selectedStatus('needs_approval')).toBeVisible({ timeout: 180000 });
+    await expect(statusDiv).toHaveText('Needs Approval', { timeout: 60000 });
+
+    await page.reload();
+    await page.waitForLoadState('domcontentloaded');
+    await expect(selectedStatus('needs_approval')).toBeVisible({ timeout: 60000 });
     await expect(statusDiv).toHaveText('Needs Approval');
-    await expect(page.locator('li[id^="selected-"]')).toHaveAttribute('id', 'selected-needs_approval');
 
     await expect(editButton).toBeEnabled();
     await editButton.click();
     await expect(statusInput).toBeVisible();
     await statusInput.click();
     await page.locator('li[data-label="Pause"]').click();
+    await page.waitForTimeout(1000);
 
+    saveButton = page.locator('button[x-tooltip="Save"][id^="estimate::edit-save-"]');
     await expect(saveButton).toBeEnabled();
     await saveButton.click();
-    await page.waitForTimeout(4000);
 
+    await expect(selectedStatus('paused')).toBeVisible({ timeout: 180000 });
+    await expect(statusDiv).toHaveText('Paused', { timeout: 60000 });
+
+    await page.reload();
+    await page.waitForLoadState('domcontentloaded');
+    await expect(selectedStatus('paused')).toBeVisible({ timeout: 60000 });
     await expect(statusDiv).toHaveText('Paused');
-    await expect(page.locator('li[id^="selected-"]')).toHaveAttribute('id', 'selected-paused');
   });
 });

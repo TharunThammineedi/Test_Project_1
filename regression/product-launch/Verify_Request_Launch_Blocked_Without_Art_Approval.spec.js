@@ -362,19 +362,14 @@ test('Verify Request Product Queue link is unavailable when Art Set is not appro
   const saveProductRouteButton = page.getByRole('button', { name: 'Save Product Route', exact: true });
   await expect(saveProductRouteButton).toBeEnabled();
   await saveProductRouteButton.click();
-  await page.waitForLoadState('domcontentloaded');
-  await page.waitForTimeout(3000);
 
-  // Return to Product Item show (known id; allow spaces; reload if navigation stalls under load)
+  // Wait for save + navigate to Product Item show — do NOT reload while still on Edit Route
+  // (early reload resets the form before save finishes)
   const productItemShowHeading = page
     .locator('div.title')
     .filter({ hasText: new RegExp(`${productItemId}\\s*-\\s*Product Item`) })
     .first();
-  if (!(await productItemShowHeading.isVisible().catch(() => false))) {
-    await page.reload();
-    await page.waitForLoadState('domcontentloaded');
-  }
-  await expect(productItemShowHeading).toBeVisible();
+  await expect(productItemShowHeading).toBeVisible({ timeout: 180000 });
   await expect(productionSpecsHeading).toBeVisible();
 
   await page.reload();

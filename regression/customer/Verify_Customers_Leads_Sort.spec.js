@@ -83,18 +83,18 @@ test('Verify Customers Leads Sort @regression @set1', async ({ page }) => {
   console.log(`[data] ascRow1: ${ascRow1}, ascRow2: ${ascRow2}`);
   expect(ascRow1.localeCompare(ascRow2)).toBeLessThanOrEqual(0);
 
-  // await (code_direction).selectOption("desc");
-  // await expect(code_direction.locator('option[value="desc"]')).toHaveAttribute('selected', 'selected');
-  // await applyButton_Code.click();
-  // await page.waitForTimeout(2000);
-  // Code desc sorting has a known defect — skipped for now
-  // const columnValues_Code_desc = page.locator('//table/thead//th[2]//following::tbody//tr//td[2]/div');
-  // const descRow1 = ((await columnValues_Code_desc.nth(0).innerText()) || '').trim();
-  // const descRow2 = ((await columnValues_Code_desc.nth(1).innerText()) || '').trim();
-  // console.log(`[data] descRow1: ${descRow1}, descRow2: ${descRow2}`);
-  // expect(descRow1.localeCompare(descRow2)).toBeGreaterThanOrEqual(0);
+  await (code_direction).selectOption("desc");
+  await expect(code_direction.locator('option[value="desc"]')).toHaveAttribute('selected', 'selected');
+  await applyButton_Code.click();
+  await page.waitForTimeout(2000);
+  //Code desc sorting has a known defect — skipped for now
+  const columnValues_Code_desc = page.locator('//table/thead//th[2]//following::tbody//tr//td[2]/div');
+  const descRow1 = ((await columnValues_Code_desc.nth(0).innerText()) || '').trim();
+  const descRow2 = ((await columnValues_Code_desc.nth(1).innerText()) || '').trim();
+  console.log(`[data] descRow1: ${descRow1}, descRow2: ${descRow2}`);
+  expect(descRow1.localeCompare(descRow2)).toBeGreaterThanOrEqual(0);
 
-  await (columnSelect_Code).selectOption("Name");
+  await (columnSelect_Code).selectOption("Customer Name | Customer Tier");
   await expect(columnSelect_Code.locator('option[value="name"]')).toHaveAttribute('selected', 'selected');
 
   await (code_direction).selectOption("asc");
@@ -202,7 +202,7 @@ test('Verify Customers Leads Sort @regression @set1', async ({ page }) => {
   console.log(`[data] descRow1_status: ${descRow1_status}, descRow2_status: ${descRow2_status}`);
   expect(descRow1_status.localeCompare(descRow2_status)).toBeGreaterThanOrEqual(0);
 
-  await (columnSelect_Code).selectOption("Tier");
+  await (columnSelect_Code).selectOption("Customer Tier");
   await expect(columnSelect_Code.locator('option[value="tier"]')).toHaveAttribute('selected', 'selected');
 
   await (code_direction).selectOption("asc");
@@ -238,7 +238,7 @@ test('Verify Customers Leads Sort @regression @set1', async ({ page }) => {
   await applyButton_Code.click();
   await page.waitForTimeout(2000);
 
-  const columnValues_Lead_asc = page.locator('//table/thead//th[12]//following::tbody//tr//td[12]//div');
+  const columnValues_Lead_asc = page.locator('//table/thead//th[11]//following::tbody//tr//td[11]//div');
   const ascRow1_lead = ((await columnValues_Lead_asc.nth(0).innerText()) || '').trim();
   const ascRow2_lead = ((await columnValues_Lead_asc.nth(1).innerText()) || '').trim();
   console.log(`[data] ascRow1_lead: ${ascRow1_lead}, ascRow2_lead: ${ascRow2_lead}`);
@@ -250,7 +250,7 @@ test('Verify Customers Leads Sort @regression @set1', async ({ page }) => {
   await applyButton_Code.click();
   await page.waitForTimeout(2000);
 
-  const columnValues_Lead_desc = page.locator('//table/thead//th[12]//following::tbody//tr//td[12]//div');
+  const columnValues_Lead_desc = page.locator('//table/thead//th[11]//following::tbody//tr//td[11]//div');
   const descRow1_lead = ((await columnValues_Lead_desc.nth(0).innerText()) || '').trim();
   const descRow2_lead = ((await columnValues_Lead_desc.nth(1).innerText()) || '').trim();
   console.log(`[data] descRow1_lead: ${descRow1_lead}, descRow2_lead: ${descRow2_lead}`);
@@ -265,3 +265,4 @@ test('Verify Customers Leads Sort @regression @set1', async ({ page }) => {
   await expect(sort0Button_after_reset).toBeVisible();
   await expect(sort0Button_after_reset).toBeEnabled();
 });
+ 

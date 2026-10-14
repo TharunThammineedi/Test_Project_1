@@ -117,7 +117,7 @@ await expect(filtersButton_afterResetCode).toBeVisible();
  
   const columnSelect_Name = page.locator("xpath=//option[normalize-space(.)='Column']/ancestor::select");
   await columnSelect_Name.click();
-  await (columnSelect_Name).selectOption("Name");
+  await (columnSelect_Name).selectOption("Customer Name | Customer Tier");
 
   const operatorSelect_Name = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select");
   await operatorSelect_Name.click();
@@ -222,7 +222,7 @@ await expect(filtersButton_afterResetCode).toBeVisible();
 
   const columnSelect_Tier = page.locator("xpath=//option[normalize-space(.)='Column']/ancestor::select");
   await columnSelect_Tier.click();
-  await (columnSelect_Tier).selectOption("Tier");
+  await (columnSelect_Tier).selectOption("Customer Tier");
 
   const operatorSelect_Tier = page.locator("xpath=//div[normalize-space(.)='Operator is equal tocontains']//select");
   await operatorSelect_Tier.click();
@@ -359,6 +359,4 @@ await expect(filtersButton_afterResetCode).toBeVisible();
  const filtersButton_afterResetMultiple = page.getByRole('button', { name: 'Filters 0', exact: true });
  await expect(filtersButton_afterResetMultiple).toBeVisible();
  await expect(columnSelectState_Multiple).not.toBeVisible();
-});
-
- 
+}); 

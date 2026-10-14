@@ -276,6 +276,4 @@ test('Opportunity duplication and edit from confirm @regression @set1', async ({
 
   await expect(opportunityInfoDiv).toBeVisible();
 
-  // const createQuickQuoteLinkAfterEdit = page.getByRole('link', { name: 'Create Quick Quote', exact: true }).first();
-  // await expect(createQuickQuoteLinkAfterEdit).toBeVisible();
 });

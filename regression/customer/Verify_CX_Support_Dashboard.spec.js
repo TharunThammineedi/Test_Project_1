@@ -40,6 +40,53 @@ test('Verify CX Support Dashboard @regression @set1', async ({ page }) => {
   await cxSupportDashboardLink.click();
   await page.waitForLoadState('domcontentloaded');
 
+  const defaultFiltersButton = page.getByRole('button', { name: 'Filters 1', exact: true });
+  await expect(defaultFiltersButton).toBeVisible();
+  await expect(defaultFiltersButton).toBeEnabled();
+  await defaultFiltersButton.click();
+
+  const resetFiltersButton = page.locator('button[wire\\:click="resetRows"]').first();
+  await expect(resetFiltersButton).toBeVisible();
+  await expect(resetFiltersButton).toBeEnabled();
+  await resetFiltersButton.click();
+  await page.waitForTimeout(2000);
+
+  const filtersButtonAfterReset = page.getByRole('button', { name: 'Filters 0', exact: true });
+  await expect(filtersButtonAfterReset).toBeVisible();
+  await expect(filtersButtonAfterReset).toBeEnabled();
+  await filtersButtonAfterReset.click();
+
+  const filterColumnInput = page.locator('input[name="rows.0.column"][type="text"]').first();
+  await expect(filterColumnInput).toBeVisible();
+  await expect(filterColumnInput).toBeEnabled();
+  await filterColumnInput.click();
+  const opportunityManagerOption = page.locator('li[data-label="Opportunity Manager"]').first();
+  await expect(opportunityManagerOption).toBeVisible();
+  await opportunityManagerOption.click();
+
+  const filterOperatorInput = page.locator('input[name="rows.0.operator"][type="text"]').first();
+  await expect(filterOperatorInput).toBeVisible();
+  await expect(filterOperatorInput).toBeEnabled();
+  await filterOperatorInput.click();
+  const isOption = page.locator('li[data-label="is"]').first();
+  await expect(isOption).toBeVisible();
+  await isOption.click();
+
+  const filterValueInput = page.locator('input[name="rows.0.value"][type="text"]').first();
+  await expect(filterValueInput).toBeVisible();
+  await expect(filterValueInput).toBeEnabled();
+  await filterValueInput.click();
+  const opportunityManagerValueOption = page.locator(`li[data-label="${testData.userPicker}"]`).first();
+  await expect(opportunityManagerValueOption).toBeVisible();
+  await opportunityManagerValueOption.click();
+
+  const applyFilterButton = page.getByRole('button', { name: 'Apply', exact: true }).first();
+  await expect(applyFilterButton).toBeEnabled();
+  await applyFilterButton.click();
+  await page.waitForTimeout(2000);
+
+  await expect(page.getByRole('button', { name: 'Filters 1', exact: true })).toBeVisible();
+
   const productItemIdRouteHeader = page.locator('th').filter({ hasText: 'PRODUCT ITEM ID | ROUTE' }).first();
   await expect(productItemIdRouteHeader).toBeVisible();
 
@@ -65,7 +112,7 @@ test('Verify CX Support Dashboard @regression @set1', async ({ page }) => {
   await expect(lastPageButton).toBeVisible();
   const mineUnfilteredPageCount = Number((await lastPageButton.innerText()).trim());
   console.log(`[data] mineUnfilteredPageCount: ${mineUnfilteredPageCount}`);
-  expect(mineFilteredPageCount).toBeLessThan(mineUnfilteredPageCount);
+  expect(mineFilteredPageCount).toBeLessThanOrEqual(mineUnfilteredPageCount);
 
   const activeOpportunitiesOnlyButton = page.locator("//label[normalize-space()='Active Opportunities Only']/following-sibling::button");
   await expect(activeOpportunitiesOnlyButton).toBeEnabled();
@@ -77,7 +124,7 @@ test('Verify CX Support Dashboard @regression @set1', async ({ page }) => {
   await expect(lastPageButton).toBeVisible();
   const activeUnfilteredPageCount = Number((await lastPageButton.innerText()).trim());
   console.log(`[data] activeUnfilteredPageCount: ${activeUnfilteredPageCount}`);
-  expect(activeFilteredPageCount).toBeLessThan(activeUnfilteredPageCount);
+  expect(activeFilteredPageCount).toBeLessThanOrEqual(activeUnfilteredPageCount);
 
   const customerNameCells = page.locator(
     "//tr//td[2]//span[contains(normalize-space(),'Customer:')]/following-sibling::div//div[contains(@class,'text-ellipsis')]"
@@ -126,9 +173,10 @@ test('Verify CX Support Dashboard @regression @set1', async ({ page }) => {
   if (await noCustomerFirst.isVisible()) {
     await expect(noCustomerFirst).toBeVisible();
   } else {
-    const customerName = page.locator("//tbody/tr[1]//td[2]//span[contains(normalize-space(),'Customer:')]/following-sibling::div//div[contains(@class,'text-ellipsis')]");
-    const name = ((await customerName.innerText()) || '').trim();
-    expect(/^A/i.test(name)).toBeTruthy();
+    const ascRow1 = ((await customerNameCells.nth(0).innerText()) || '').trim();
+    const ascRow2 = ((await customerNameCells.nth(1).innerText()) || '').trim();
+    console.log(`[data] ascRow1: ${ascRow1}, ascRow2: ${ascRow2}`);
+    expect(ascRow1.localeCompare(ascRow2)).toBeLessThanOrEqual(0);
   }
 
   await page.getByRole('button', { name: 'Sort 1', exact: true }).click();

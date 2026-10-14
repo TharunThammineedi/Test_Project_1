@@ -55,6 +55,53 @@ test.describe('CX Support Opportunity Creation @regression', () => {
     const dashboardHeading = page.locator('label').filter({ hasText: 'CX Support Dashboard' }).first();
     await expect(dashboardHeading).toBeVisible();
 
+    const defaultFiltersButton = page.getByRole('button', { name: 'Filters 1', exact: true });
+    await expect(defaultFiltersButton).toBeVisible();
+    await expect(defaultFiltersButton).toBeEnabled();
+    await defaultFiltersButton.click();
+
+    const resetFiltersButton = page.locator('button[wire\\:click="resetRows"]').first();
+    await expect(resetFiltersButton).toBeVisible();
+    await expect(resetFiltersButton).toBeEnabled();
+    await resetFiltersButton.click();
+    await page.waitForTimeout(2000);
+
+    const filtersButtonAfterReset = page.getByRole('button', { name: 'Filters 0', exact: true });
+    await expect(filtersButtonAfterReset).toBeVisible();
+    await expect(filtersButtonAfterReset).toBeEnabled();
+    await filtersButtonAfterReset.click();
+
+    const filterColumnInput = page.locator('input[name="rows.0.column"][type="text"]').first();
+    await expect(filterColumnInput).toBeVisible();
+    await expect(filterColumnInput).toBeEnabled();
+    await filterColumnInput.click();
+    const opportunityManagerOption = page.locator('li[data-label="Opportunity Manager"]').first();
+    await expect(opportunityManagerOption).toBeVisible();
+    await opportunityManagerOption.click();
+
+    const filterOperatorInput = page.locator('input[name="rows.0.operator"][type="text"]').first();
+    await expect(filterOperatorInput).toBeVisible();
+    await expect(filterOperatorInput).toBeEnabled();
+    await filterOperatorInput.click();
+    const isOption = page.locator('li[data-label="is"]').first();
+    await expect(isOption).toBeVisible();
+    await isOption.click();
+
+    const filterValueInput = page.locator('input[name="rows.0.value"][type="text"]').first();
+    await expect(filterValueInput).toBeVisible();
+    await expect(filterValueInput).toBeEnabled();
+    await filterValueInput.click();
+    const opportunityManagerValueOption = page.locator(`li[data-label="${testData.userPicker}"]`).first();
+    await expect(opportunityManagerValueOption).toBeVisible();
+    await opportunityManagerValueOption.click();
+
+    const applyFilterButton = page.getByRole('button', { name: 'Apply', exact: true }).first();
+    await expect(applyFilterButton).toBeEnabled();
+    await applyFilterButton.click();
+    await page.waitForTimeout(2000);
+
+    await expect(page.getByRole('button', { name: 'Filters 1', exact: true })).toBeVisible();
+
     const newOpportunityButton = page.getByRole('button', { name: 'New Opportunity', exact: true });
     await expect(newOpportunityButton).toBeEnabled();
     await newOpportunityButton.click();
@@ -145,6 +192,23 @@ test.describe('CX Support Opportunity Creation @regression', () => {
     await cxSupportDashboardLink.click();
     await page.waitForLoadState('domcontentloaded');
 
+    await expect(defaultFiltersButton).toBeEnabled();
+    await defaultFiltersButton.click();
+    await expect(resetFiltersButton).toBeEnabled();
+    await resetFiltersButton.click();
+    await page.waitForTimeout(2000);
+    await expect(filtersButtonAfterReset).toBeEnabled();
+    await filtersButtonAfterReset.click();
+    await filterColumnInput.click();
+    await opportunityManagerOption.click();
+    await filterOperatorInput.click();
+    await isOption.click();
+    await filterValueInput.click();
+    await opportunityManagerValueOption.click();
+    await expect(applyFilterButton).toBeEnabled();
+    await applyFilterButton.click();
+    await page.waitForTimeout(2000);
+
     const dashboardQuickSearchInput = page.locator('[data-cy="input"]');
     await expect(dashboardQuickSearchInput).toBeVisible();
     await expect(dashboardQuickSearchInput).toBeEnabled();
@@ -176,6 +240,23 @@ test.describe('CX Support Opportunity Creation @regression', () => {
     await expect(cxSupportDashboardLink).toBeEnabled();
     await cxSupportDashboardLink.click();
     await page.waitForLoadState('domcontentloaded');
+
+    await expect(defaultFiltersButton).toBeEnabled();
+    await defaultFiltersButton.click();
+    await expect(resetFiltersButton).toBeEnabled();
+    await resetFiltersButton.click();
+    await page.waitForTimeout(2000);
+    await expect(filtersButtonAfterReset).toBeEnabled();
+    await filtersButtonAfterReset.click();
+    await filterColumnInput.click();
+    await opportunityManagerOption.click();
+    await filterOperatorInput.click();
+    await isOption.click();
+    await filterValueInput.click();
+    await opportunityManagerValueOption.click();
+    await expect(applyFilterButton).toBeEnabled();
+    await applyFilterButton.click();
+    await page.waitForTimeout(2000);
 
     await dashboardQuickSearchInput.click();
     await dashboardQuickSearchInput.fill(opportunityNumber);
@@ -222,6 +303,53 @@ test.describe('CX Support Opportunity Creation @regression', () => {
     await expect(cxSupportDashboardLink).toBeEnabled();
     await cxSupportDashboardLink.click();
     await page.waitForLoadState('domcontentloaded');
+
+    const defaultFiltersButton = page.getByRole('button', { name: 'Filters 1', exact: true });
+    await expect(defaultFiltersButton).toBeVisible();
+    await expect(defaultFiltersButton).toBeEnabled();
+    await defaultFiltersButton.click();
+
+    const resetFiltersButton = page.locator('button[wire\\:click="resetRows"]').first();
+    await expect(resetFiltersButton).toBeVisible();
+    await expect(resetFiltersButton).toBeEnabled();
+    await resetFiltersButton.click();
+    await page.waitForTimeout(2000);
+
+    const filtersButtonAfterReset = page.getByRole('button', { name: 'Filters 0', exact: true });
+    await expect(filtersButtonAfterReset).toBeVisible();
+    await expect(filtersButtonAfterReset).toBeEnabled();
+    await filtersButtonAfterReset.click();
+
+    const filterColumnInput = page.locator('input[name="rows.0.column"][type="text"]').first();
+    await expect(filterColumnInput).toBeVisible();
+    await expect(filterColumnInput).toBeEnabled();
+    await filterColumnInput.click();
+    const opportunityManagerOption = page.locator('li[data-label="Opportunity Manager"]').first();
+    await expect(opportunityManagerOption).toBeVisible();
+    await opportunityManagerOption.click();
+
+    const filterOperatorInput = page.locator('input[name="rows.0.operator"][type="text"]').first();
+    await expect(filterOperatorInput).toBeVisible();
+    await expect(filterOperatorInput).toBeEnabled();
+    await filterOperatorInput.click();
+    const isOption = page.locator('li[data-label="is"]').first();
+    await expect(isOption).toBeVisible();
+    await isOption.click();
+
+    const filterValueInput = page.locator('input[name="rows.0.value"][type="text"]').first();
+    await expect(filterValueInput).toBeVisible();
+    await expect(filterValueInput).toBeEnabled();
+    await filterValueInput.click();
+    const opportunityManagerValueOption = page.locator(`li[data-label="${testData.userPicker}"]`).first();
+    await expect(opportunityManagerValueOption).toBeVisible();
+    await opportunityManagerValueOption.click();
+
+    const applyFilterButton = page.getByRole('button', { name: 'Apply', exact: true }).first();
+    await expect(applyFilterButton).toBeEnabled();
+    await applyFilterButton.click();
+    await page.waitForTimeout(2000);
+
+    await expect(page.getByRole('button', { name: 'Filters 1', exact: true })).toBeVisible();
 
     const newOpportunityButton = page.getByRole('button', { name: 'New Opportunity', exact: true });
     await expect(newOpportunityButton).toBeEnabled();

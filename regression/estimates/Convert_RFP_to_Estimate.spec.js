@@ -141,7 +141,7 @@ test('Convert RFP to Estimate @regression @set1 @mainflow', async ({ page }) => 
   const convertToEstimateButton_not_visible = page.locator('button').filter({ hasText: 'Convert to Estimate' });
   await expect(convertToEstimateButton_not_visible).not.toBeEnabled();
 
-  const selectUserButton = page.locator('xpath=(//button[normalize-space()="Select User"])[1]')
+  const selectUserButton = page.locator('xpath=(//button[normalize-space()="Assign Estimator"])[1]')
   await expect(selectUserButton).toBeVisible();
   await selectUserButton.click();
 
@@ -210,3 +210,4 @@ test('Convert RFP to Estimate @regression @set1 @mainflow', async ({ page }) => 
   const rowCount_Estimates = page.locator('//th[normalize-space()="Customer"]//following::tbody//tr//td[2]');
   await expect(rowCount_Estimates).toHaveCount(1);
 });
+ 

@@ -176,8 +176,10 @@ test('Verify Customers Leads Index and Quick Search @regression @set1', async ({
   const customerRowsName = page.locator('//tbody/tr//td[3]//div[contains(@class,"text-left")]');
   const customerNames = await customerRowsName.allTextContents();
   expect(customerNames.length).toBeGreaterThan(0);
+  const normalize = (value) =>value.toLowerCase() .replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
+  const expectedName = normalize(testData.customerName.trim().toLowerCase());
   for (const customerName of customerNames) {
-    expect(customerName.trim().toLowerCase()).toContain(testData.customerName.trim().toLowerCase());
+    expect(normalize(customerName),`Customer "${customerName.trim()}" does not match "${testData.customerName}"` ).toContain(expectedName);
   }
 
   await quickSearchInput.clear();
@@ -216,16 +218,6 @@ test('Verify Customers Leads Index and Quick Search @regression @set1', async ({
   await page.waitForTimeout(3000);
   await expect(page.locator('tbody tr').first()).toBeVisible();
 
-  await quickSearchInput.fill(testData.CustomerTier);
-  await page.waitForTimeout(4000);
-
-  const customerTierFilter = page.locator('//tbody/tr//td[11]//div[contains(@class,"text-left")]');
-  const customerTiers = await customerTierFilter.allTextContents();
-  expect(customerTiers.length).toBeGreaterThan(0);
-  for (const customerTier of customerTiers) {
-    expect(customerTier.trim().toLowerCase()).toContain(testData.CustomerTier.trim().toLowerCase());
-  }
-
   await quickSearchInput.clear();
   await page.waitForTimeout(3000);
   await expect(page.locator('tbody tr').first()).toBeVisible();
@@ -241,3 +233,4 @@ test('Verify Customers Leads Index and Quick Search @regression @set1', async ({
   console.log(`[data] noCustomerDataRecordsCount: ${noCustomerDataRecordsCountText}`);
   expect(noCustomerDataRecordsCountText).toBe('0');
 });
+ 

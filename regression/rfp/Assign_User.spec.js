@@ -301,18 +301,18 @@ test('Assign User in RFP @regression @set1', async ({ page }) => {
   await expect(selectUserButton).toBeVisible();
   await selectUserButton.click();
 
-  const rohithRangaCell = page.locator('td').filter({ hasText: 'Ranga Sharan Rohith' }).first();
-  await expect(rohithRangaCell).toBeVisible();
-  await rohithRangaCell.click();
+  const tharunThammineediCell = page.locator('td').filter({ hasText: 'Tharun Thammineedi' }).first();
+  await expect(tharunThammineediCell).toBeVisible();
+  await tharunThammineediCell.click();
 
-  const rohithRangaDiv = page.locator('div').filter({ hasText: 'Ranga Sharan Rohith' }).first();
-  await expect(rohithRangaDiv).toBeVisible();
+  const tharunThammineediDiv = page.locator('div').filter({ hasText: 'Tharun Thammineedi' }).first();
+  await expect(tharunThammineediDiv).toBeVisible();
 
   await expect(unlinkButton).toBeVisible();
 
   await expect(continueCustomerButton).toBeEnabled();
   await continueCustomerButton.click();
 
-  const rohithRangaButton = page.getByRole('button', { name: 'Ranga Sharan Rohith', exact: true });
-  await expect(rohithRangaButton).toBeVisible();
+  const tharunThammineediButton = page.getByRole('button', { name: 'Tharun Thammineedi', exact: true });
+  await expect(tharunThammineediButton).toBeVisible();
 });

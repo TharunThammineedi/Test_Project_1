@@ -31,7 +31,7 @@ test('Convert RFP to Estimate @regression @set1 @mainflow', async ({ page }) => 
 
   const taskDashboardLabel = page
     .locator('label')
-    .filter({ hasText: /^Ranga\'s Task Dashboard$/ })
+    .filter({ hasText: /^Tharun\'s Task Dashboard$/ })
     .first();
 
   await expect(taskDashboardLabel).toBeVisible();
@@ -145,16 +145,16 @@ test('Convert RFP to Estimate @regression @set1 @mainflow', async ({ page }) => 
   await expect(selectUserButton).toBeVisible();
   await selectUserButton.click();
 
-  const rohithRangaCell = page.locator('td').filter({ hasText: loggedInUserName }).first();
-  await expect(rohithRangaCell).toBeVisible();
-  await rohithRangaCell.click();
+  const tharunThammineediCell = page.locator('td').filter({ hasText: loggedInUserName }).first();
+  await expect(tharunThammineediCell).toBeVisible();
+  await tharunThammineediCell.click();
 
   const continueCustomerButton = page.getByRole('button', { name: 'Continue', exact: true });
   await expect(continueCustomerButton).toBeEnabled();
   await continueCustomerButton.click();
 
-  const rohithRangaButton = page.getByRole('button', { name: loggedInUserName, exact: true });
-  await expect(rohithRangaButton).toBeVisible();
+  const tharunThammineediButton = page.getByRole('button', { name: loggedInUserName, exact: true });
+  await expect(tharunThammineediButton).toBeVisible();
 
   const convertToEstimateButton = page.locator('button').filter({ hasText: 'Convert to Estimate' });
   await expect(convertToEstimateButton).toBeVisible();

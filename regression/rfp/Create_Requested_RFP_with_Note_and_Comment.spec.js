@@ -321,9 +321,9 @@ test.describe('RFP Creation @regression', () => {
   const alertSummaryDiv = page.locator('div').filter({ hasText: 'ALERT DATE CREATED DATE MODIFIED CREATED BY NOTES' }).first();
   await expect(alertSummaryDiv).toBeVisible();
 
-  const rohithRangaDiv = page.locator('div').filter({ hasText: 'Ranga Sharan Rohith' }).first();
-  await expect(rohithRangaDiv).toBeVisible();
-  await expect(rohithRangaDiv).toBeEnabled();
+  const tharunThammineediDiv = page.locator('div').filter({ hasText: 'Tharun Thammineedi' }).first();
+  await expect(tharunThammineediDiv).toBeVisible();
+  await expect(tharunThammineediDiv).toBeEnabled();
 
   const commentsCustomerFacingText = page.locator('span').filter({ hasText: 'Comments (Customer facing)' }).first();
   await expect(commentsCustomerFacingText).toBeVisible();
@@ -391,9 +391,9 @@ test.describe('RFP Creation @regression', () => {
   await expect(rfpCellStatus).toBeVisible();
   await expect(rfpCellStatus).toHaveText('Requested');
 
-  const rfpCellCreatedBy = page.locator('td').filter({ hasText: 'Ranga Sharan Rohith' }).first();
+  const rfpCellCreatedBy = page.locator('td').filter({ hasText: 'Tharun Thammineedi' }).first();
   await expect(rfpCellCreatedBy).toBeVisible();
-  await expect(rfpCellCreatedBy).toHaveText('Ranga Sharan Rohith');
+  await expect(rfpCellCreatedBy).toHaveText('Tharun Thammineedi');
 
   const productClassCell = page.locator('td').filter({ hasText: 'RFID Label' }).first();
   await expect(productClassCell).toBeVisible();

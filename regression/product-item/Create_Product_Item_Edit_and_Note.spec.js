@@ -330,7 +330,7 @@ test('Create Product Item with general info, edit and note @regression @set2', a
   const alertSummaryDiv = page.locator('div').filter({ hasText: 'ALERT DATE CREATED DATE MODIFIED CREATED BY NOTES' }).first();
   await expect(alertSummaryDiv).toBeVisible();
 
-  const rohithRangaDiv = page.locator('div').filter({ hasText: 'Ranga Sharan Rohith' }).first();
-  await expect(rohithRangaDiv).toBeVisible();
-  await expect(rohithRangaDiv).toBeEnabled();
+  const tharunThammineediDiv = page.locator('div').filter({ hasText: 'Tharun Thammineedi' }).first();
+  await expect(tharunThammineediDiv).toBeVisible();
+  await expect(tharunThammineediDiv).toBeEnabled();
 });

@@ -180,7 +180,7 @@ test.describe('Opportunity Creation @regression', () => {
     await saveNoteButton.scrollIntoViewIfNeeded();
     await saveNoteButton.click({ force: true });
 
-    const noteAuthor = page.locator('div').filter({ hasText: 'Ranga Sharan Rohith' }).first();
+    const noteAuthor = page.locator('div').filter({ hasText: 'Tharun Thammineedi' }).first();
     await expect(noteAuthor).toBeVisible();
 
     const noteContent = page.locator('div').filter({ hasText: testData.awaitPageLocatorQlEditorFill }).first();

@@ -46,7 +46,7 @@ test.describe('Estimate Creation @regression', () => {
 
     const taskDashboardLabel = page
       .locator('label')
-      .filter({ hasText: /^Ranga\'s Task Dashboard$/ })
+      .filter({ hasText: /^Tharun\'s Task Dashboard$/ })
       .first();
 
     await expect(taskDashboardLabel).toBeVisible();
@@ -502,9 +502,9 @@ const draftIcon = page.locator(
   const addedNoteDiv = page.getByText(testData.notesRequired).last();
   await expect(addedNoteDiv).toBeVisible();
 
-  const rohithRangaDiv = page.locator('div').filter({ hasText: 'Ranga Sharan Rohith' }).first();
-  await expect(rohithRangaDiv).toBeVisible();
-  await expect(rohithRangaDiv).toBeEnabled();
+  const tharunThammineediDiv = page.locator('div').filter({ hasText: 'Tharun Thammineedi' }).first();
+  await expect(tharunThammineediDiv).toBeVisible();
+  await expect(tharunThammineediDiv).toBeEnabled();
 
   const commentsCustomerFacingText = page.locator('span').filter({ hasText: 'Comments (Customer facing)' }).first();
   await expect(commentsCustomerFacingText).toBeVisible();

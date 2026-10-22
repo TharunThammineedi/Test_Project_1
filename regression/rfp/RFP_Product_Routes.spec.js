@@ -31,7 +31,7 @@ test('Link Product Routes and quick search @regression @set1', async ({ page }) 
 
   const taskDashboardLabel = page
     .locator('label')
-    .filter({ hasText: /^Ranga\'s Task Dashboard$/ })
+    .filter({ hasText: /^Tharun\'s Task Dashboard$/ })
     .first();
 
   await expect(taskDashboardLabel).toBeVisible();

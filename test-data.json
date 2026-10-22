@@ -1,6 +1,6 @@
 {
   "url": "https://stg.kala.ink/login",
-  "email": "rohith.sharan@feuji.com",
+  "email": "tharun.thammineedi@feuji.com",
   "password": "Prod@123",
   "quickSearch": "TEST R & Dee",
   "customerCode": "CUS18166",
@@ -23,7 +23,7 @@
   "itemDefaultCost": "20",
   "itemDefaultPrice": "30",
   "awaitPageLocatorQlEditorFill": "Test123",
-  "userPicker": "Ranga Sharan Rohith",
+  "userPicker": "Tharun Thammineedi",
   "userPicker_2": "Jay Allyson",
   "pushbackNoteSecond": "Prepress missing information note"
 }

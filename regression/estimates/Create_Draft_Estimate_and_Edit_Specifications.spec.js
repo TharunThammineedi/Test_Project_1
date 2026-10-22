@@ -34,7 +34,7 @@ await confirmSignInButton.click();
 // Dashboard navigation
 const taskDashboardLabel = page
   .locator('label')
-  .filter({ hasText: /^Ranga\'s Task Dashboard$/ })
+  .filter({ hasText: /^Tharun\'s Task Dashboard$/ })
   .first();
 
 await expect(taskDashboardLabel).toBeVisible();

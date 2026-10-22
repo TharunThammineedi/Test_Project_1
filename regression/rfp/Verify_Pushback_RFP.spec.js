@@ -33,7 +33,7 @@ test('Verify Pushback RFP @regression @set2', async ({ page }) => {
   // Dashboard navigation
   const taskDashboardLabel = page
     .locator('label')
-    .filter({ hasText: /^Ranga\'s Task Dashboard$/ })
+    .filter({ hasText: /^Tharun\'s Task Dashboard$/ })
     .first();
 
   await expect(taskDashboardLabel).toBeVisible();

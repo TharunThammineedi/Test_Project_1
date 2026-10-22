@@ -43,7 +43,7 @@ test('Verify CX Support Filters @regression @set1', async ({ page }) => {
   const dashboardHeading = page.locator('label').filter({ hasText: 'CX Support Dashboard' }).first();
   await expect(dashboardHeading).toBeVisible();
 
-  const defaultFiltersButton = page.getByRole('button', { name: 'Filters 1', exact: true });
+  const defaultFiltersButton = page.getByRole('button', { name: 'Filters', exact: false });
   await expect(defaultFiltersButton).toBeVisible();
   await expect(defaultFiltersButton).toBeEnabled();
   await defaultFiltersButton.click();

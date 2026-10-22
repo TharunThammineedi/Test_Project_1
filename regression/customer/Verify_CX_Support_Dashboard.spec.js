@@ -40,7 +40,7 @@ test('Verify CX Support Dashboard @regression @set1', async ({ page }) => {
   await cxSupportDashboardLink.click();
   await page.waitForLoadState('domcontentloaded');
 
-  const defaultFiltersButton = page.getByRole('button', { name: 'Filters 1', exact: true });
+  const defaultFiltersButton = page.getByRole('button', { name: 'Filters', exact: false });
   await expect(defaultFiltersButton).toBeVisible();
   await expect(defaultFiltersButton).toBeEnabled();
   await defaultFiltersButton.click();

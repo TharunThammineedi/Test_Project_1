@@ -153,4 +153,6 @@ test('Edit Opportunity general information @regression @set1', async ({ page }) 
   await expect(page.locator('//div[normalize-space()="Name"]/following-sibling::div').first()).toContainText(session.opportunityName);
   await expect(page.locator('//div[normalize-space()="Description"]/following-sibling::div').first()).toContainText(session.projectDescription);
   await expect(page.locator('span').filter({ hasText: 'Paso Robles, CA (33)' }).first()).toBeVisible();
+
+  
 });
